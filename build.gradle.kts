@@ -16,16 +16,16 @@ repositories {
 }
 
 dependencies {
-	implementation("org.springframework.boot:spring-boot-starter-actuator")
+	implementation("org.springframework.boot:spring-boot-starter-actuator") // check health of the system
 	implementation("org.springframework.boot:spring-boot-starter-data-jpa")
 	implementation("org.springframework.boot:spring-boot-starter-security")
 	implementation("org.springframework.boot:spring-boot-starter-thymeleaf")
 	implementation("org.springframework.boot:spring-boot-starter-validation")
 	implementation("org.springframework.boot:spring-boot-starter-web")
-	implementation("org.thymeleaf.extras:thymeleaf-extras-springsecurity6")
+	implementation("org.thymeleaf.extras:thymeleaf-extras-springsecurity6") // use it for sending mail
 	developmentOnly("org.springframework.boot:spring-boot-devtools")
-	runtimeOnly("com.mysql:mysql-connector-j")
-	testImplementation("org.springframework.boot:spring-boot-starter-test")
+	runtimeOnly("com.mysql:mysql-connector-j") // j is  short-hand of java
+	testImplementation("org.springframework.boot:spring-boot-starter-test") // use it for writing test cases
 	testImplementation("org.springframework.security:spring-security-test")
 }
 
