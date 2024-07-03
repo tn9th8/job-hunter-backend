@@ -2,6 +2,9 @@ package vn.nhannt.jobhunter.controller;
 
 import java.util.List;
 
+import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -28,35 +31,42 @@ public class UserController {
     }
 
     @PostMapping("/users")
-    public User createUser(@RequestBody User user) {
+    public ResponseEntity<User> createUser(@RequestBody User user) {
         final User createdUser = userService.save(user);
-        return createdUser;
+        return ResponseEntity.status(HttpStatus.OK).body(createdUser);
     }
 
     @PatchMapping("users")
-    public User updateUser(@RequestBody User user) {
+    public ResponseEntity<User> updateUser(@RequestBody User user) {
         User updatedUser = this.userService.update(user);
-        return updatedUser;
+        return ResponseEntity.ok().body(updatedUser);
     }
 
     @GetMapping("/users")
-    public List<User> fetchAllUsers() {
+    public ResponseEntity<List<User>> fetchAllUsers() {
         List<User> users = this.userService.findAll();
-        return users;
+        return ResponseEntity.ok(users);
     }
 
     @GetMapping("users/{id}")
-    public User fetchUser(@PathVariable("id") Long id) {
-        User users = this.userService.findOne(id);
-        return users;
+    public ResponseEntity<User> fetchUser(@PathVariable("id") Long id) {
+        User user = this.userService.findOne(id);
+        return ResponseEntity.ok(user);
     }
 
+    /**
+     * {@code DELETE  /users/:id} : delete the "id" user.
+     *
+     * @param id the id of the user to delete.
+     * @return the {@link ResponseEntity} with status {@code 204 (NO_CONTENT)}.
+     */
     @DeleteMapping("users/{id}")
-    public void deleteUser(@PathVariable("id") Long id) throws IdInvalidException {
+    public ResponseEntity<Void> deleteUser(@PathVariable("id") Long id) throws IdInvalidException {
         if (id > 10) {
             throw new IdInvalidException("Id is smaller than 100");
         }
 
         this.userService.delete(id);
+        return ResponseEntity.noContent().build();
     }
 }
