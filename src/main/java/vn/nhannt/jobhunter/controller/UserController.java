@@ -3,7 +3,6 @@ package vn.nhannt.jobhunter.controller;
 import java.util.List;
 
 import org.springframework.http.HttpStatus;
-import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -61,12 +60,20 @@ public class UserController {
      * @return the {@link ResponseEntity} with status {@code 204 (NO_CONTENT)}.
      */
     @DeleteMapping("users/{id}")
-    public ResponseEntity<Void> deleteUser(@PathVariable("id") Long id) throws IdInvalidException {
-        if (id > 10) {
-            throw new IdInvalidException("Id is smaller than 100");
+    public ResponseEntity<Void> deleteUser(@PathVariable("id") String idString)
+            throws IdInvalidException {
+        try {
+            Long id = Long.valueOf(idString);
+
+            if (id > 100) {
+                throw new IdInvalidException("id is not bigger than 100");
+            }
+
+            this.userService.delete(id);
+            return ResponseEntity.noContent().build();
+        } catch (NumberFormatException nfe) {
+            throw new NumberFormatException("Can not convert a id PathVariable from String to Long");
         }
 
-        this.userService.delete(id);
-        return ResponseEntity.noContent().build();
     }
 }
