@@ -3,6 +3,7 @@ package vn.nhannt.jobhunter.service;
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import vn.nhannt.jobhunter.domain.User;
@@ -11,19 +12,22 @@ import vn.nhannt.jobhunter.repository.UserRepository;
 /**
  * Service for managing {@link com.mycompany.myapp.domain.User}.
  */
-
 @Service
 public class UserService {
 
     private final UserRepository userRepository;
 
-    public UserService(UserRepository userRepository) {
+    private final PasswordEncoder passwordEncoder;
+
+    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
+        this.passwordEncoder = passwordEncoder;
     }
 
     public User save(User user) {
-        final User createdUser = this.userRepository.save(user);
-        return createdUser;
+        String hashPassword = passwordEncoder.encode(user.getPassword());
+        user.setPassword(hashPassword);
+        return this.userRepository.save(user);
     }
 
     public User update(User user) {
