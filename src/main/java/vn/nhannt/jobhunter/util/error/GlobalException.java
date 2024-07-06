@@ -1,8 +1,6 @@
-package vn.nhannt.jobhunter.service.error;
+package vn.nhannt.jobhunter.util.error;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.springframework.http.HttpStatus;

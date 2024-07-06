@@ -1,6 +1,5 @@
 package vn.nhannt.jobhunter.service;
 
-import java.util.Collection;
 import java.util.Collections;
 
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
