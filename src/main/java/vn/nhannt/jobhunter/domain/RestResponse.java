@@ -1,16 +1,16 @@
 package vn.nhannt.jobhunter.domain;
 
 public class RestResponse<T> {
-    private Object message;
+    private String message;
     private int status;
-    private String error;
+    private Object error;
     private T data;
 
-    public Object getMessage() {
+    public String getMessage() {
         return message;
     }
 
-    public void setMessage(Object message) {
+    public void setMessage(String message) {
         this.message = message;
     }
 
@@ -22,11 +22,11 @@ public class RestResponse<T> {
         this.status = status;
     }
 
-    public String getError() {
+    public Object getError() {
         return error;
     }
 
-    public void setError(String error) {
+    public void setError(Object error) {
         this.error = error;
     }
 
