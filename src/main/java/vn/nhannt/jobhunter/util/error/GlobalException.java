@@ -18,25 +18,33 @@ import vn.nhannt.jobhunter.domain.RestResponse;
 /**
  * AOP
  * Java v4.3
+ * Handle exceptions at the controller
  */
 @RestControllerAdvice
 public class GlobalException {
+
+    /**
+     * Jwt configuration allows to handle exceptions at the filter chain
+     *
+     * @param: UsernameNotFoundException, BadCredentialsException
+     * @return: ResponseEntity
+     */
     @ExceptionHandler(value = {
-            IdInvalidException.class,
+            // IdInvalidException.class,
             UsernameNotFoundException.class,
             BadCredentialsException.class,
-            NumberFormatException.class
+            // NumberFormatException.class
 
     })
-    public ResponseEntity<RestResponse<Object>> handleIdInvalidException(IdInvalidException ide) {
+    public ResponseEntity<RestResponse<Object>> handleIdInvalidException(Exception e) {
 
         RestResponse<Object> response = new RestResponse<>();
 
-        response.setMessage("Exception occurs");
-        response.setStatus(HttpStatus.BAD_REQUEST.value());
-        response.setError(ide.getMessage());
+        response.setMessage("Bad Credentials Exception");
+        response.setStatus(HttpStatus.UNAUTHORIZED.value());
+        response.setError("Username hoặc Password không hợp lệ");
 
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
     }
 
     @ExceptionHandler(value = MethodArgumentNotValidException.class)

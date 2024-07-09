@@ -4,6 +4,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.RestController;
 
 import jakarta.validation.Valid;
@@ -31,9 +32,14 @@ public class AuthController {
         UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
                 loginDTO.getUsername(), loginDTO.getPassword());
 
-        // xác thực người dùng => cần viết hàm loadUserByUsername
-        // return a fully authenticated object including credentials
+        /**
+         * xác thực người dùng => cần viết hàm loadUserByUsername
+         * return a fully authenticated object including credentials
+         * a fully authenticated object is authentication
+         * khi login thành công, nạp authentication vào Security Context
+         */
         Authentication authentication = authenticationManagerBuilder.getObject().authenticate(authenticationToken);
+        SecurityContextHolder.getContext().setAuthentication(authentication);
 
         // create a token, pass a payload
         String accessToken = this.securityUtil.createToken(authentication);
