@@ -60,17 +60,18 @@ public class UserController {
      * @return the {@link ResponseEntity} with status {@code 204 (NO_CONTENT)}.
      */
     @DeleteMapping("users/{id}")
-    public ResponseEntity<Void> deleteUser(@PathVariable("id") String idString)
+    public ResponseEntity<Void> deleteUser(@PathVariable("id") String id)
             throws IdInvalidException {
         try {
-            Long id = Long.valueOf(idString);
+            Long validId = Long.valueOf(id);
 
-            if (id > 100) {
+            if (validId > 100) {
                 throw new IdInvalidException("id is not bigger than 100");
             }
 
-            this.userService.delete(id);
+            this.userService.delete(validId);
             return ResponseEntity.noContent().build();
+
         } catch (NumberFormatException nfe) {
             throw new NumberFormatException("Can not convert a id PathVariable from String to Long");
         }
