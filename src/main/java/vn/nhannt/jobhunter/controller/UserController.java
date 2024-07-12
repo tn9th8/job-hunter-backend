@@ -62,6 +62,7 @@ public class UserController {
     @DeleteMapping("users/{id}")
     public ResponseEntity<Void> deleteUser(@PathVariable("id") String id)
             throws IdInvalidException {
+        // TO DO: đưa logic vào service
         try {
             Long validId = Long.valueOf(id);
 

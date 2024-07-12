@@ -77,4 +77,16 @@ public class GlobalException {
 
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
     }
+
+    @ExceptionHandler(value = { NumberFormatException.class })
+    public ResponseEntity<RestResponse<Object>> handleNumberFormatException(NumberFormatException nfe) {
+
+        RestResponse<Object> response = new RestResponse<>();
+
+        response.setMessage("Number Format Exception");
+        response.setStatus(HttpStatus.BAD_REQUEST.value());
+        response.setError(nfe.getMessage());
+
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
+    }
 }
