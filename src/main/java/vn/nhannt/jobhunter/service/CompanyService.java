@@ -1,6 +1,5 @@
 package vn.nhannt.jobhunter.service;
 
-import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.domain.Page;
@@ -63,8 +62,10 @@ public class CompanyService {
         final Page<Company> pCompany = this.companyRepository.findAll(spec, pageable);
 
         final Meta meta = new Meta();
-        meta.setPage(pCompany.getNumber() + 1);
-        meta.setPageSize(pCompany.getSize());
+        meta.setPage(pageable.getPageNumber() + 1);
+        meta.setPageSize(pageable.getPageSize());
+        // meta.setPage(pCompany.getNumber() + 1);
+        // meta.setPageSize(pCompany.getSize());
         meta.setPages(pCompany.getTotalPages());
         meta.setTotal(pCompany.getTotalElements());
 

@@ -1,8 +1,5 @@
 package vn.nhannt.jobhunter.controller;
 
-import java.util.Optional;
-
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
@@ -13,7 +10,6 @@ import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.turkraft.springfilter.boot.Filter;
@@ -23,6 +19,7 @@ import vn.nhannt.jobhunter.domain.Company;
 import vn.nhannt.jobhunter.domain.dto.ReqCompanyDTO;
 import vn.nhannt.jobhunter.domain.dto.ResPaginationDTO;
 import vn.nhannt.jobhunter.service.CompanyService;
+import vn.nhannt.jobhunter.util.annotation.ApiMessage;
 
 @RestController
 public class CompanyController {
@@ -34,18 +31,21 @@ public class CompanyController {
     }
 
     @PostMapping("/companies")
+    @ApiMessage("create a user")
     public ResponseEntity<Company> createUser(@Valid @RequestBody ReqCompanyDTO reqCompanyDTO) {
         final Company company = this.companyService.save(reqCompanyDTO);
         return ResponseEntity.status(HttpStatus.CREATED).body(company);
     }
 
     @PatchMapping("/companies")
+    @ApiMessage("update a user")
     public ResponseEntity<Company> updateUser(@Valid @RequestBody Company company) {
         final Company updatedCompany = this.companyService.update(company);
         return ResponseEntity.ok(updatedCompany);
     }
 
     @GetMapping("/companies")
+    @ApiMessage("find all users")
     public ResponseEntity<ResPaginationDTO> fetchAllUsers(
             @Filter Specification<Company> spec,
             Pageable pageable) {
@@ -54,6 +54,7 @@ public class CompanyController {
     }
 
     @GetMapping("/companies/{id}")
+    @ApiMessage("fetch one user")
     public ResponseEntity<Company> fetchOneUser(@PathVariable("id") String id) {
         // TO DO: đưa logic vào service
         try {
@@ -68,6 +69,7 @@ public class CompanyController {
     }
 
     @DeleteMapping("/companies/{id}")
+    @ApiMessage("delete a user")
     public ResponseEntity<Void> deleteUser(@PathVariable("id") String id) {
         // TO DO: đưa logic vào service
         try {
