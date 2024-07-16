@@ -25,6 +25,7 @@ dependencies {
 	implementation("org.springframework.boot:spring-boot-starter-web")
 	implementation("org.springframework.boot:spring-boot-starter-oauth2-resource-server")
 	implementation("org.thymeleaf.extras:thymeleaf-extras-springsecurity6") // use it for sending mail
+	implementation("com.turkraft.springfilter:jpa:3.1.7")
 	developmentOnly("org.springframework.boot:spring-boot-devtools")
 	runtimeOnly("com.mysql:mysql-connector-j") // j is  short-hand of java
 	testImplementation("org.springframework.boot:spring-boot-starter-test") // use it for writing test cases

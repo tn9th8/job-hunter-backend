@@ -3,10 +3,15 @@ package vn.nhannt.jobhunter.service;
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import vn.nhannt.jobhunter.domain.Company;
+import vn.nhannt.jobhunter.domain.dto.Meta;
 import vn.nhannt.jobhunter.domain.dto.ReqCompanyDTO;
+import vn.nhannt.jobhunter.domain.dto.ResPaginationDTO;
 import vn.nhannt.jobhunter.repository.CompanyRepository;
 
 @Service
@@ -54,9 +59,20 @@ public class CompanyService {
      *
      * @return List<Company>
      */
-    public List<Company> findAll() {
-        final List<Company> companies = this.companyRepository.findAll();
-        return companies;
+    public ResPaginationDTO findAll(Specification<Company> spec, Pageable pageable) {
+        final Page<Company> pCompany = this.companyRepository.findAll(spec, pageable);
+
+        final Meta meta = new Meta();
+        meta.setPage(pCompany.getNumber() + 1);
+        meta.setPageSize(pCompany.getSize());
+        meta.setPages(pCompany.getTotalPages());
+        meta.setTotal(pCompany.getTotalElements());
+
+        final ResPaginationDTO presPaginationDTO = new ResPaginationDTO();
+        presPaginationDTO.setMeta(meta);
+        presPaginationDTO.setResult(pCompany.getContent()); // Returns the page content as {@link List}
+
+        return presPaginationDTO;
     }
 
     /**
