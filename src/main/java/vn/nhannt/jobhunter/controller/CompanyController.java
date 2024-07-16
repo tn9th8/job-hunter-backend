@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.turkraft.springfilter.boot.Filter;
@@ -21,7 +22,11 @@ import vn.nhannt.jobhunter.domain.dto.ResPaginationDTO;
 import vn.nhannt.jobhunter.service.CompanyService;
 import vn.nhannt.jobhunter.util.annotation.ApiMessage;
 
+/**
+ * TO DO: đưa api versioning vào property
+ */
 @RestController
+@RequestMapping("/api/v1")
 public class CompanyController {
 
     private final CompanyService companyService;
