@@ -16,9 +16,9 @@ import org.springframework.web.bind.annotation.RestController;
 import com.turkraft.springfilter.boot.Filter;
 
 import jakarta.validation.Valid;
-import vn.nhannt.jobhunter.domain.Company;
 import vn.nhannt.jobhunter.domain.dto.ReqCompanyDTO;
 import vn.nhannt.jobhunter.domain.dto.ResPaginationDTO;
+import vn.nhannt.jobhunter.domain.entity.Company;
 import vn.nhannt.jobhunter.service.CompanyService;
 import vn.nhannt.jobhunter.util.annotation.ApiMessage;
 

@@ -1,4 +1,4 @@
-package vn.nhannt.jobhunter.domain;
+package vn.nhannt.jobhunter.domain.dto;
 
 public class RestResponse<T> {
     private String message;

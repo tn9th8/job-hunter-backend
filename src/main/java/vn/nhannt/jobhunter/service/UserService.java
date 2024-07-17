@@ -6,11 +6,12 @@ import java.util.Optional;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import vn.nhannt.jobhunter.domain.User;
+import vn.nhannt.jobhunter.domain.entity.User;
 import vn.nhannt.jobhunter.repository.UserRepository;
 
 /**
- * Service for managing {@link com.mycompany.myapp.domain.User}.
+ * Service for managing
+ * {@link vn.nhannt.jobhunter.domain.entity.mycompany.myapp.domain.User}.
  */
 @Service
 public class UserService {

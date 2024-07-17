@@ -12,12 +12,12 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import vn.nhannt.jobhunter.domain.User;
+import vn.nhannt.jobhunter.domain.entity.User;
 import vn.nhannt.jobhunter.service.UserService;
 import vn.nhannt.jobhunter.util.error.IdInvalidException;
 
 /**
- * REST controller for managing {@link vn.nhannt.jobhunter.domain.User}.
+ * REST controller for managing {@link vn.nhannt.jobhunter.domain.entity.User}.
  */
 
 @RestController

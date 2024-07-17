@@ -7,10 +7,10 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
-import vn.nhannt.jobhunter.domain.Company;
 import vn.nhannt.jobhunter.domain.dto.Meta;
 import vn.nhannt.jobhunter.domain.dto.ReqCompanyDTO;
 import vn.nhannt.jobhunter.domain.dto.ResPaginationDTO;
+import vn.nhannt.jobhunter.domain.entity.Company;
 import vn.nhannt.jobhunter.repository.CompanyRepository;
 
 @Service

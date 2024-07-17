@@ -24,6 +24,7 @@ import com.nimbusds.jose.jwk.source.ImmutableSecret;
 import com.nimbusds.jose.util.Base64;
 
 import vn.nhannt.jobhunter.util.SecurityUtil;
+import vn.nhannt.jobhunter.util.constant.Constants;
 
 @Configuration
 @EnableMethodSecurity(securedEnabled = true)
