@@ -87,6 +87,19 @@ public class GlobalException {
         response.setStatus(HttpStatus.BAD_REQUEST.value());
         response.setError(nfe.getMessage());
 
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
     }
+
+    @ExceptionHandler(value = { UniqueException.class })
+    public ResponseEntity<RestResponse<Object>> handleUniqueException(UniqueException ue) {
+
+        RestResponse<Object> response = new RestResponse<>();
+
+        response.setMessage("Unique Exception");
+        response.setStatus(HttpStatus.BAD_REQUEST.value());
+        response.setError(ue.getMessage());
+
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+    }
+
 }

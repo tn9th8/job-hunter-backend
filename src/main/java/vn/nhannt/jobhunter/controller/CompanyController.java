@@ -35,6 +35,7 @@ public class CompanyController {
         this.companyService = companyService;
     }
 
+    // TO DO: fix method name, api message
     @PostMapping("/companies")
     @ApiMessage("create a user")
     public ResponseEntity<Company> createUser(@Valid @RequestBody ReqCompanyDTO reqCompanyDTO) {
