@@ -11,7 +11,9 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import vn.nhannt.jobhunter.domain.dto.Meta;
+import vn.nhannt.jobhunter.domain.dto.ResCreationUserDTO;
 import vn.nhannt.jobhunter.domain.dto.ResPaginationDTO;
+import vn.nhannt.jobhunter.domain.dto.ResUpdateUserDTO;
 import vn.nhannt.jobhunter.domain.dto.ResUserDTO;
 import vn.nhannt.jobhunter.domain.entity.User;
 import vn.nhannt.jobhunter.repository.UserRepository;
@@ -46,13 +48,13 @@ public class UserService {
     }
 
     public User update(User reqUser) throws UniqueException {
-        User existingUser = this.findOne(reqUser.getId());
-        existingUser.setName(reqUser.getName());
-        existingUser.setAge(reqUser.getAge());
-        existingUser.setGender(reqUser.getGender());
-        existingUser.setAddress(reqUser.getAddress());
+        User existUser = this.findOne(reqUser.getId());
+        existUser.setName(reqUser.getName());
+        existUser.setAge(reqUser.getAge());
+        existUser.setGender(reqUser.getGender());
+        existUser.setAddress(reqUser.getAddress());
 
-        return this.userRepository.save(existingUser);
+        return this.userRepository.save(existUser);
 
     }
 
@@ -66,20 +68,7 @@ public class UserService {
         meta.setTotal(pUsers.getTotalElements());
 
         List<ResUserDTO> result = pUsers.getContent().stream()
-                .map(user -> {
-                    final ResUserDTO userDTO = new ResUserDTO();
-                    userDTO.setId(user.getId());
-                    userDTO.setName(user.getName());
-                    userDTO.setEmail(user.getEmail());
-                    userDTO.setAge(user.getAge());
-                    userDTO.setGender(user.getGender());
-                    userDTO.setAddress(user.getAddress());
-                    userDTO.setCreatedAt(user.getCreatedAt());
-                    userDTO.setCreatedBy(user.getCreatedBy());
-                    userDTO.setUpdatedAt(user.getUpdatedAt());
-                    userDTO.setUpdatedBy(user.getUpdatedBy());
-                    return userDTO;
-                })
+                .map(user -> this.convertToResUserDTO(user))
                 .collect(Collectors.toList());
 
         final ResPaginationDTO resPaginationDTO = new ResPaginationDTO();
@@ -98,16 +87,53 @@ public class UserService {
     }
 
     public void delete(Long id) throws UniqueException {
-        if (this.userRepository.existsById(id) == false) {
-            throw new UniqueException("Không tồn tại User với Id là " + id);
-        }
-
+        this.findOne(id);
         this.userRepository.deleteById(id);
     }
 
     // others
     public User findByUsername(String username) {
         return this.userRepository.findByEmail(username);
+    }
+
+    public ResCreationUserDTO convertToResCreationUserDTO(User user) {
+        final ResCreationUserDTO userDTO = new ResCreationUserDTO();
+        userDTO.setId(user.getId());
+        userDTO.setName(user.getName());
+        userDTO.setEmail(user.getEmail());
+        userDTO.setAge(user.getAge());
+        userDTO.setGender(user.getGender());
+        userDTO.setAddress(user.getAddress());
+        userDTO.setCreatedAt(user.getCreatedAt());
+        userDTO.setCreatedBy(user.getCreatedBy());
+        return userDTO;
+    }
+
+    public ResUpdateUserDTO convertToResUpdateUserDTO(User user) {
+        final ResUpdateUserDTO userDTO = new ResUpdateUserDTO();
+        userDTO.setId(user.getId());
+        userDTO.setName(user.getName());
+        userDTO.setAge(user.getAge());
+        userDTO.setGender(user.getGender());
+        userDTO.setAddress(user.getAddress());
+        userDTO.setUpdatedAt(user.getUpdatedAt());
+        userDTO.setUpdatedBy(user.getUpdatedBy());
+        return userDTO;
+    }
+
+    public ResUserDTO convertToResUserDTO(User user) {
+        final ResUserDTO userDTO = new ResUserDTO();
+        userDTO.setId(user.getId());
+        userDTO.setName(user.getName());
+        userDTO.setEmail(user.getEmail());
+        userDTO.setAge(user.getAge());
+        userDTO.setGender(user.getGender());
+        userDTO.setAddress(user.getAddress());
+        userDTO.setCreatedAt(user.getCreatedAt());
+        userDTO.setCreatedBy(user.getCreatedBy());
+        userDTO.setUpdatedAt(user.getUpdatedAt());
+        userDTO.setUpdatedBy(user.getUpdatedBy());
+        return userDTO;
     }
 
 }

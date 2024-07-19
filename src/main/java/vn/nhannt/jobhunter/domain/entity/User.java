@@ -17,6 +17,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Table;
+import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;
 import lombok.Setter;
 import vn.nhannt.jobhunter.util.SecurityUtil;
@@ -41,8 +42,11 @@ public class User implements Serializable {
 
     private String name;
 
+    @NotBlank(message = "The email field is not null")
     private String email;
 
+    // @JsonIgnore // ko lấy password => ảnh hưởng đến spring security
+    @NotBlank(message = "The password field is not null")
     private String password;
 
     private int age;

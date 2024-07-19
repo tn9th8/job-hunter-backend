@@ -12,6 +12,7 @@ import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.servlet.resource.NoResourceFoundException;
 
 import vn.nhannt.jobhunter.domain.dto.RestResponse;
 
@@ -100,6 +101,18 @@ public class GlobalException {
         response.setError(ue.getMessage());
 
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+    }
+
+    @ExceptionHandler(value = { NoResourceFoundException.class })
+    public ResponseEntity<RestResponse<Object>> handleNoResourceFoundException(NoResourceFoundException nrfe) {
+
+        RestResponse<Object> response = new RestResponse<>();
+
+        response.setMessage("No Resource Found Exception");
+        response.setStatus(HttpStatus.NOT_FOUND.value());
+        response.setError(nrfe.getMessage());
+
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
     }
 
 }

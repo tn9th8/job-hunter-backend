@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.turkraft.springfilter.boot.Filter;
 
+import jakarta.validation.Valid;
 import vn.nhannt.jobhunter.domain.dto.ResCreationUserDTO;
 import vn.nhannt.jobhunter.domain.dto.ResPaginationDTO;
 import vn.nhannt.jobhunter.domain.dto.ResUpdateUserDTO;
@@ -22,7 +23,6 @@ import vn.nhannt.jobhunter.domain.dto.ResUserDTO;
 import vn.nhannt.jobhunter.domain.entity.User;
 import vn.nhannt.jobhunter.service.UserService;
 import vn.nhannt.jobhunter.util.annotation.ApiMessage;
-import vn.nhannt.jobhunter.util.error.IdInvalidException;
 import vn.nhannt.jobhunter.util.error.UniqueException;
 
 /**
@@ -48,33 +48,18 @@ public class UserController {
      */
     @PostMapping("/users")
     @ApiMessage("Create a user")
-    public ResponseEntity<ResCreationUserDTO> createUser(@RequestBody User reqUser) throws UniqueException {
-        final User user = userService.save(reqUser);
-        final ResCreationUserDTO userDTO = new ResCreationUserDTO();
-        userDTO.setId(user.getId());
-        userDTO.setName(user.getName());
-        userDTO.setEmail(user.getEmail());
-        userDTO.setAge(user.getAge());
-        userDTO.setGender(user.getGender());
-        userDTO.setAddress(user.getAddress());
-        userDTO.setCreatedAt(user.getCreatedAt());
-        userDTO.setCreatedBy(user.getCreatedBy());
-        return ResponseEntity.status(HttpStatus.OK).body(userDTO);
+    public ResponseEntity<ResCreationUserDTO> createUser(@Valid @RequestBody User reqUser) throws UniqueException {
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(this.userService.convertToResCreationUserDTO(userService.save(reqUser)));
     }
 
     @PatchMapping("users")
     @ApiMessage("Update a user")
     public ResponseEntity<ResUpdateUserDTO> updateUser(@RequestBody User reqUser) throws UniqueException {
-        User user = this.userService.update(reqUser);
-        final ResUpdateUserDTO userDTO = new ResUpdateUserDTO();
-        userDTO.setId(user.getId());
-        userDTO.setName(user.getName());
-        userDTO.setAge(user.getAge());
-        userDTO.setGender(user.getGender());
-        userDTO.setAddress(user.getAddress());
-        userDTO.setUpdatedAt(user.getUpdatedAt());
-        userDTO.setUpdatedBy(user.getUpdatedBy());
-        return ResponseEntity.ok().body(userDTO);
+        return ResponseEntity
+                .ok()
+                .body(this.userService.convertToResUpdateUserDTO(this.userService.update(reqUser)));
     }
 
     @GetMapping("/users")
@@ -87,46 +72,29 @@ public class UserController {
 
     @GetMapping("users/{id}")
     @ApiMessage("Fetch one user")
-    public ResponseEntity<ResUserDTO> fetchUser(@PathVariable("id") Long id) throws UniqueException {
-        User user = this.userService.findOne(id);
-        final ResUserDTO userDTO = new ResUserDTO();
-        userDTO.setId(user.getId());
-        userDTO.setName(user.getName());
-        userDTO.setEmail(user.getEmail());
-        userDTO.setAge(user.getAge());
-        userDTO.setGender(user.getGender());
-        userDTO.setAddress(user.getAddress());
-        userDTO.setCreatedAt(user.getCreatedAt());
-        userDTO.setCreatedBy(user.getCreatedBy());
-        userDTO.setUpdatedAt(user.getUpdatedAt());
-        userDTO.setUpdatedBy(user.getUpdatedBy());
-        return ResponseEntity.ok(userDTO);
-    }
-
-    /**
-     * {@code DELETE  /users/:id} : delete the "id" user.
-     *
-     * @param id the id of the user to delete.
-     * @return the {@link ResponseEntity} with status {@code 204 (NO_CONTENT)}.
-     */
-    @DeleteMapping("users/{id}")
-    @ApiMessage("Delete a user")
-    public ResponseEntity<Void> deleteUser(@PathVariable("id") String id)
-            throws IdInvalidException, UniqueException {
+    public ResponseEntity<ResUserDTO> fetchUser(@PathVariable("id") String sId) throws UniqueException {
         // TO DO: đưa logic vào service
         try {
-            Long validId = Long.valueOf(id);
+            Long id = Long.valueOf(sId);
+            return ResponseEntity.ok(this.userService.convertToResUserDTO(this.userService.findOne(id)));
 
-            if (validId > 100) {
-                throw new IdInvalidException("id is not bigger than 100");
-            }
+        } catch (NumberFormatException nfe) {
+            throw new NumberFormatException("Can not convert a id PathVariable from String to Long");
+        }
+    }
 
-            this.userService.delete(validId);
+    @DeleteMapping("users/{id}")
+    @ApiMessage("Delete a user")
+    public ResponseEntity<Void> deleteUser(@PathVariable("id") String sId)
+            throws UniqueException {
+        // TO DO: đưa logic vào service
+        try {
+            Long id = Long.valueOf(sId);
+            this.userService.delete(id);
             return ResponseEntity.noContent().build();
 
         } catch (NumberFormatException nfe) {
             throw new NumberFormatException("Can not convert a id PathVariable from String to Long");
         }
-
     }
 }
