@@ -10,6 +10,8 @@ import org.springframework.web.bind.annotation.RestController;
 import jakarta.validation.Valid;
 import vn.nhannt.jobhunter.domain.dto.LoginDTO;
 import vn.nhannt.jobhunter.domain.dto.ResLoginDTO;
+import vn.nhannt.jobhunter.domain.entity.User;
+import vn.nhannt.jobhunter.service.UserService;
 import vn.nhannt.jobhunter.util.SecurityUtil;
 
 import org.springframework.web.bind.annotation.PostMapping;
@@ -22,10 +24,15 @@ public class AuthController {
 
     private AuthenticationManagerBuilder authenticationManagerBuilder;
     private SecurityUtil securityUtil;
+    private UserService userService;
 
-    public AuthController(AuthenticationManagerBuilder authenticationManagerBuilder, SecurityUtil securityUtil) {
+    public AuthController(
+            AuthenticationManagerBuilder authenticationManagerBuilder,
+            SecurityUtil securityUtil,
+            UserService userService) {
         this.authenticationManagerBuilder = authenticationManagerBuilder;
         this.securityUtil = securityUtil;
+        this.userService = userService;
     }
 
     @PostMapping("/login")
@@ -38,15 +45,20 @@ public class AuthController {
          * xác thực người dùng => cần viết hàm loadUserByUsername
          * return a fully authenticated object including credentials
          * a fully authenticated object is authentication
-         * khi login thành công, nạp authentication vào Security Context
+         * khi login thành công:
+         * - create a token
+         * - nạp authentication vào Security Context
          */
         Authentication authentication = authenticationManagerBuilder.getObject().authenticate(authenticationToken);
+        String accessToken = this.securityUtil.createToken(authentication);
         SecurityContextHolder.getContext().setAuthentication(authentication);
 
-        // create a token, pass a payload
-        String accessToken = this.securityUtil.createToken(authentication);
-        ResLoginDTO resLoginDTO = new ResLoginDTO();
-        resLoginDTO.setAccessToken(accessToken);
-        return ResponseEntity.ok().body(resLoginDTO);
+        User dbUser = this.userService.findByUsername(loginDTO.getUsername());
+        if (dbUser != null) {
+            ResLoginDTO.User user = new ResLoginDTO.User(dbUser.getId(), dbUser.getEmail(), dbUser.getEmail());
+            ResLoginDTO resLoginDTO = new ResLoginDTO(accessToken, user);
+            return ResponseEntity.ok().body(resLoginDTO);
+        }
+        return null;
     }
 }
