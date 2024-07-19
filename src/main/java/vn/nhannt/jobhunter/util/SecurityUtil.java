@@ -17,6 +17,7 @@ import org.springframework.security.oauth2.jwt.JwtEncoder;
 import org.springframework.security.oauth2.jwt.JwtEncoderParameters;
 import org.springframework.stereotype.Service;
 
+import vn.nhannt.jobhunter.domain.dto.ResLoginDTO;
 import vn.nhannt.jobhunter.util.constant.Constants;
 
 @Service
@@ -33,16 +34,19 @@ public class SecurityUtil {
     @Value(Constants.jwtKey)
     private String jwtKey;
 
-    @Value(Constants.jwtExpiration)
-    private long jwtExpiration;
+    @Value(Constants.accessTokenExpiration)
+    private long accessTokenExpiration;
 
-    public String createToken(Authentication authentication) {
+    @Value(Constants.refreshTokenExpiration)
+    private long refreshTokenExpiration;
+
+    public String createAccessToken(Authentication authentication) {
 
         /**
          * Instant: the time library
          */
         final Instant now = Instant.now();
-        final Instant validity = now.plus(this.jwtExpiration, ChronoUnit.SECONDS);
+        final Instant validity = now.plus(this.accessTokenExpiration, ChronoUnit.SECONDS);
 
         // @formatter:off
         JwtClaimsSet claims = JwtClaimsSet.builder()
@@ -56,6 +60,28 @@ public class SecurityUtil {
         return this.jwtEncoder.encode(JwtEncoderParameters.from(jwsHeader, claims)).getTokenValue();
 
     }
+
+    public String createRefreshToken(ResLoginDTO.User authUser) {
+
+        /**
+         * Instant: the time library
+         */
+        final Instant now = Instant.now();
+        final Instant validity = now.plus(this.refreshTokenExpiration, ChronoUnit.SECONDS);
+
+        // @formatter:off
+        JwtClaimsSet claims = JwtClaimsSet.builder()
+            .issuedAt(now)
+            .expiresAt(validity)
+            .subject(authUser.getEmail())
+            .claim("AUTHENTICATED_USER", authUser)
+            .build();
+
+        JwsHeader jwsHeader = JwsHeader.with(JWT_ALGORITHM).build();
+        return this.jwtEncoder.encode(JwtEncoderParameters.from(jwsHeader, claims)).getTokenValue();
+
+    }
+
 
     /**
      * Get the login of the current user.

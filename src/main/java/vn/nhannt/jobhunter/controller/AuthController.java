@@ -50,15 +50,14 @@ public class AuthController {
          * - nạp authentication vào Security Context
          */
         Authentication authentication = authenticationManagerBuilder.getObject().authenticate(authenticationToken);
-        String accessToken = this.securityUtil.createToken(authentication);
         SecurityContextHolder.getContext().setAuthentication(authentication);
+        String accessToken = this.securityUtil.createAccessToken(authentication);
 
         User dbUser = this.userService.findByUsername(loginDTO.getUsername());
-        if (dbUser != null) {
-            ResLoginDTO.User user = new ResLoginDTO.User(dbUser.getId(), dbUser.getEmail(), dbUser.getEmail());
-            ResLoginDTO resLoginDTO = new ResLoginDTO(accessToken, user);
-            return ResponseEntity.ok().body(resLoginDTO);
-        }
-        return null;
+        ResLoginDTO.User user = new ResLoginDTO.User(dbUser.getId(), dbUser.getName(), dbUser.getEmail());
+
+        ResLoginDTO resLoginDTO = new ResLoginDTO(accessToken, user);
+        String refreshToken = this.securityUtil.createRefreshToken(user);
+        return ResponseEntity.ok().body(resLoginDTO);
     }
 }
