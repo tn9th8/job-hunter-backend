@@ -40,11 +40,7 @@ public class SecurityUtil {
     @Value(Constants.refreshTokenExpiration)
     private long refreshTokenExpiration;
 
-    public String createAccessToken(Authentication authentication) {
-
-        /**
-         * Instant: the time library
-         */
+    public String createAccessToken(Authentication authentication, ResLoginDTO.User authUser) {
         final Instant now = Instant.now();
         final Instant validity = now.plus(this.accessTokenExpiration, ChronoUnit.SECONDS);
 
@@ -53,7 +49,7 @@ public class SecurityUtil {
             .issuedAt(now)
             .expiresAt(validity)
             .subject(authentication.getName())
-            .claim("AUTHORITIES_KEY", authentication)
+            .claim("authUser", authUser)
             .build();
 
         JwsHeader jwsHeader = JwsHeader.with(JWT_ALGORITHM).build();
@@ -62,10 +58,6 @@ public class SecurityUtil {
     }
 
     public String createRefreshToken(ResLoginDTO.User authUser) {
-
-        /**
-         * Instant: the time library
-         */
         final Instant now = Instant.now();
         final Instant validity = now.plus(this.refreshTokenExpiration, ChronoUnit.SECONDS);
 
@@ -117,12 +109,12 @@ public class SecurityUtil {
      *
      * @return the JWT of the current user.
      */
-    // public static Optional<String> getCurrentUserJWT() {
-    //     SecurityContext securityContext = SecurityContextHolder.getContext();
-    //     return Optional.ofNullable(securityContext.getAuthentication())
-    //         .filter(authentication -> authentication.getCredentials() instanceof String)
-    //         .map(authentication -> (String) authentication.getCredentials());
-    // }
+    public static Optional<String> getCurrentUserJWT() {
+        SecurityContext securityContext = SecurityContextHolder.getContext();
+        return Optional.ofNullable(securityContext.getAuthentication())
+            .filter(authentication -> authentication.getCredentials() instanceof String)
+            .map(authentication -> (String) authentication.getCredentials());
+    }
 
     /**
      * Check if a user is authenticated.

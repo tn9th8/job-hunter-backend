@@ -96,6 +96,15 @@ public class UserService {
         return this.userRepository.findByEmail(username);
     }
 
+    public void updateRefreshToken(String username, String refreshToken) {
+        User currentUser = this.findByUsername(username);
+        if (currentUser != null) {
+            currentUser.setRefreshToken(refreshToken);
+        }
+        this.userRepository.save(currentUser);
+    }
+
+    // map
     public ResCreationUserDTO convertToResCreationUserDTO(User user) {
         final ResCreationUserDTO userDTO = new ResCreationUserDTO();
         userDTO.setId(user.getId());
