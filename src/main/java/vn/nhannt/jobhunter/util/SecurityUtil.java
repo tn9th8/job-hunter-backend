@@ -2,6 +2,8 @@ package vn.nhannt.jobhunter.util;
 
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Value;
@@ -44,12 +46,18 @@ public class SecurityUtil {
         final Instant now = Instant.now();
         final Instant validity = now.plus(this.accessTokenExpiration, ChronoUnit.SECONDS);
 
+        // hardcode permission
+        List<String> listPermission = new ArrayList<>();
+        listPermission.add("ROLE_USER_CREATE");
+        listPermission.add("ROLE_USER_UPDATE");
+
         // @formatter:off
         JwtClaimsSet claims = JwtClaimsSet.builder()
             .issuedAt(now)
             .expiresAt(validity)
             .subject(authentication.getName())
             .claim("authUser", authUser)
+            .claim("permissions", listPermission)
             .build();
 
         JwsHeader jwsHeader = JwsHeader.with(JWT_ALGORITHM).build();

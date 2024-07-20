@@ -53,27 +53,40 @@ public class AuthController {
                 loginDTO.getUsername(), loginDTO.getPassword());
 
         /**
-         * xác thực người dùng => cần viết hàm loadUserByUsername
-         * return a fully authenticated object including credentials
+         * 
+         * 
          * a fully authenticated object is authentication
          * khi login thành công:
          * - create a token
-         * - nạp authentication vào Security Context
+         * -
          */
-        Authentication authentication = authenticationManagerBuilder.getObject().authenticate(authenticationToken);
+
+        // xác thực user => cần viết hàm loadUserByUsername
+        // return authentication that is a fully authenticated object
+        Authentication authentication = authenticationManagerBuilder
+                .getObject()
+                .authenticate(authenticationToken);
+
+        // nạp authentication vào Security Context
         SecurityContextHolder.getContext().setAuthentication(authentication);
 
+        // response the auth user
         ResLoginDTO resLoginDTO = new ResLoginDTO();
         User dbUser = this.userService.findByUsername(loginDTO.getUsername());
         if (dbUser != null) {
             ResLoginDTO.User loginUser = new ResLoginDTO.User(dbUser.getId(), dbUser.getName(), dbUser.getEmail());
             resLoginDTO.setUser(loginUser);
-            String accessToken = this.securityUtil.createAccessToken(authentication, loginUser);
-            resLoginDTO.setAccessToken(accessToken);
         }
 
+        // response a access token
+        String accessToken = this.securityUtil.createAccessToken(authentication, resLoginDTO.getUser());
+        resLoginDTO.setAccessToken(accessToken);
+
+        // update db a refresh token
         String refreshToken = this.securityUtil.createRefreshToken(resLoginDTO.getUser());
         this.userService.updateRefreshToken(loginDTO.getUsername(), refreshToken);
+
+        // set cookie a refresh token
         ResponseCookie resCookie = ResponseCookie
                 .from("refreshToken", refreshToken)
                 .httpOnly(true) // chỉ cho phép server sử dụng, thay vì client js
@@ -82,6 +95,7 @@ public class AuthController {
                 .maxAge(refreshTokenExpiration)
                 // .domain("")
                 .build();
+
         return ResponseEntity
                 .ok()
                 .header(HttpHeaders.SET_COOKIE, resCookie.toString())

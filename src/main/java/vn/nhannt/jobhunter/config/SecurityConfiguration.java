@@ -46,15 +46,12 @@ public class SecurityConfiguration {
                 .cors(Customizer.withDefaults())
                 .authorizeHttpRequests(authz -> authz
                         .requestMatchers("/", "/api/v1/auth/login").permitAll()
-                        .anyRequest().authenticated()) // .anyRequest().permitAll())
+                        .anyRequest().authenticated())
+                // config jwt => client must send access token
                 .oauth2ResourceServer((oauth2) -> oauth2
+                        // cấu hình mặt định, bằng với ....jwt({}))
                         .jwt(Customizer.withDefaults())
-                        .authenticationEntryPoint(customAuthenticationEntryPoint)) // 401: ko được ủy quyền
-                /**
-                 * bằng với: .oauth2ResourceServer((oauth2) -> oauth2.jwt({}))
-                 * tuy nhiên dấu {} không có nghĩa, luôn phải theo OOP
-                 */
-
+                        .authenticationEntryPoint(customAuthenticationEntryPoint))
                 // .exceptionHandling(
                 // exceptions -> exceptions
                 // .authenticationEntryPoint(customAuthenticationEntryPoint) // 401
@@ -71,6 +68,7 @@ public class SecurityConfiguration {
         return http.build();
     }
 
+    // method được chạy đầu tiên
     @Bean
     public JwtDecoder jwtDecoder() {
         NimbusJwtDecoder jwtDecoder = NimbusJwtDecoder.withSecretKey(
@@ -92,16 +90,14 @@ public class SecurityConfiguration {
 
     /**
      * override the JwtAuthenticationConverter method
-     * Sau khi decode jwt thành công, convert data trong payload, rồi nạp vào
-     * Security context để reuse
-     *
-     * @return
+     * mục đích cho spring security biết claim name
+     * để get authorities (permissions) từ access token
      */
     @Bean
     public JwtAuthenticationConverter jwtAuthenticationConverter() {
         JwtGrantedAuthoritiesConverter grantedAuthoritiesConverter = new JwtGrantedAuthoritiesConverter();
         grantedAuthoritiesConverter.setAuthorityPrefix("");
-        grantedAuthoritiesConverter.setAuthoritiesClaimName("authUser");
+        grantedAuthoritiesConverter.setAuthoritiesClaimName("permissions");
         JwtAuthenticationConverter jwtAuthenticationConverter = new JwtAuthenticationConverter();
 
         jwtAuthenticationConverter.setJwtGrantedAuthoritiesConverter(grantedAuthoritiesConverter);
