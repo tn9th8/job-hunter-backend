@@ -104,6 +104,13 @@ public class UserService {
         this.userRepository.save(currentUser);
     }
 
+    public boolean checkUserOwnsRefreshToken(String username, String refreshToken) throws UniqueException {
+        if (this.userRepository.existsByEmailAndRefreshToken(username, refreshToken) == false) {
+            throw new UniqueException("Người dùng " + username + " không có refreshToken hợp lệ");
+        }
+        return true;
+    }
+
     // map
     public ResCreationUserDTO convertToResCreationUserDTO(User user) {
         final ResCreationUserDTO userDTO = new ResCreationUserDTO();

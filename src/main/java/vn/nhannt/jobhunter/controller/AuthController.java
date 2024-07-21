@@ -8,6 +8,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -18,10 +19,12 @@ import jakarta.validation.Valid;
 import vn.nhannt.jobhunter.domain.dto.LoginDTO;
 import vn.nhannt.jobhunter.domain.dto.ResLoginDTO;
 import vn.nhannt.jobhunter.domain.entity.User;
+import vn.nhannt.jobhunter.service.AuthService;
 import vn.nhannt.jobhunter.service.UserService;
 import vn.nhannt.jobhunter.util.SecurityUtil;
 import vn.nhannt.jobhunter.util.annotation.ApiMessage;
 import vn.nhannt.jobhunter.util.constant.Constants;
+import vn.nhannt.jobhunter.util.error.UniqueException;
 
 @RestController
 @RequestMapping("/api/v1")
@@ -33,33 +36,29 @@ public class AuthController {
 
     private UserService userService;
 
+    private AuthService authService;
+
     @Value(Constants.refreshTokenExpiration)
     private long refreshTokenExpiration;
 
     public AuthController(
             AuthenticationManagerBuilder authenticationManagerBuilder,
             SecurityUtil securityUtil,
-            UserService userService) {
+            UserService userService,
+            AuthService authService) {
         this.authenticationManagerBuilder = authenticationManagerBuilder;
         this.securityUtil = securityUtil;
         this.userService = userService;
+        this.authService = authService;
     }
 
+    // TO DO : đưa vào service
     @PostMapping("/auth/login")
-    @ApiMessage("Auth login")
+    @ApiMessage("Login")
     public ResponseEntity<ResLoginDTO> login(@Valid @RequestBody LoginDTO loginDTO) {
         // Nạp input gồm username/password vào Security
         UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
                 loginDTO.getUsername(), loginDTO.getPassword());
-
-        /**
-         * 
-         * 
-         * a fully authenticated object is authentication
-         * khi login thành công:
-         * - create a token
-         * -
-         */
 
         // xác thực user => cần viết hàm loadUserByUsername
         // return authentication that is a fully authenticated object
@@ -72,14 +71,14 @@ public class AuthController {
 
         // response the auth user
         ResLoginDTO resLoginDTO = new ResLoginDTO();
-        User dbUser = this.userService.findByUsername(loginDTO.getUsername());
+        User dbUser = this.userService.findByUsername(authentication.getName());
         if (dbUser != null) {
-            ResLoginDTO.User loginUser = new ResLoginDTO.User(dbUser.getId(), dbUser.getName(), dbUser.getEmail());
-            resLoginDTO.setUser(loginUser);
+            ResLoginDTO.User authUser = new ResLoginDTO.User(dbUser.getId(), dbUser.getName(), dbUser.getEmail());
+            resLoginDTO.setUser(authUser);
         }
 
         // response a access token
-        String accessToken = this.securityUtil.createAccessToken(authentication, resLoginDTO.getUser());
+        String accessToken = this.securityUtil.createAccessToken(authentication.getName(), resLoginDTO.getUser());
         resLoginDTO.setAccessToken(accessToken);
 
         // update db a refresh token
@@ -102,8 +101,9 @@ public class AuthController {
                 .body(resLoginDTO);
     }
 
+    // TO DO : đưa vào service
     @GetMapping("/auth/account")
-    @ApiMessage("Auth account")
+    @ApiMessage("Get account")
     public ResponseEntity<ResLoginDTO.User> fetchAccount() {
         final String email = SecurityUtil.getCurrentUserLogin().isPresent()
                 ? SecurityUtil.getCurrentUserLogin().get()
@@ -116,5 +116,22 @@ public class AuthController {
             authUser.setEmail(dbUser.getEmail());
         }
         return ResponseEntity.ok().body(authUser);
+    }
+
+    /**
+     * TO DO bug
+     */
+    @GetMapping("/auth/refresh")
+    @ApiMessage("Refresh token")
+    public ResponseEntity<ResLoginDTO> refeshToken(
+            @CookieValue(name = "refreshToken") String refreshToken) throws UniqueException {
+
+        AuthService.ResLoginAndCookie resLoginAndCookie = this.authService.new ResLoginAndCookie();
+        resLoginAndCookie = this.authService.refreshToken(refreshToken);
+
+        return ResponseEntity
+                .ok()
+                .header(HttpHeaders.SET_COOKIE, resLoginAndCookie.getResCookie())
+                .body(resLoginAndCookie.getResLoginDTO());
     }
 }

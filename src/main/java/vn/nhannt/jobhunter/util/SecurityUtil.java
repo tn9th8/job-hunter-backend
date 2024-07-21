@@ -42,7 +42,7 @@ public class SecurityUtil {
     @Value(Constants.refreshTokenExpiration)
     private long refreshTokenExpiration;
 
-    public String createAccessToken(Authentication authentication, ResLoginDTO.User authUser) {
+    public String createAccessToken(String email, ResLoginDTO.User authUser) {
         final Instant now = Instant.now();
         final Instant validity = now.plus(this.accessTokenExpiration, ChronoUnit.SECONDS);
 
@@ -55,7 +55,7 @@ public class SecurityUtil {
         JwtClaimsSet claims = JwtClaimsSet.builder()
             .issuedAt(now)
             .expiresAt(validity)
-            .subject(authentication.getName())
+            .subject(email)
             .claim("authUser", authUser)
             .claim("permissions", listPermission)
             .build();
@@ -74,7 +74,7 @@ public class SecurityUtil {
             .issuedAt(now)
             .expiresAt(validity)
             .subject(authUser.getEmail())
-            .claim("AUTHENTICATED_USER", authUser)
+            .claim("refreshUser", authUser)
             .build();
 
         JwsHeader jwsHeader = JwsHeader.with(JWT_ALGORITHM).build();

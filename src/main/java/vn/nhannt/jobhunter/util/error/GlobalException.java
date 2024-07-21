@@ -7,9 +7,11 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.oauth2.jwt.JwtException;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.MissingRequestCookieException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.servlet.resource.NoResourceFoundException;
@@ -115,4 +117,28 @@ public class GlobalException {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
     }
 
+    @ExceptionHandler(value = { JwtException.class })
+    public ResponseEntity<RestResponse<Object>> handleJwtException(JwtException je) {
+
+        RestResponse<Object> response = new RestResponse<>();
+
+        response.setMessage("Jwt Exception");
+        response.setStatus(HttpStatus.UNAUTHORIZED.value());
+        response.setError(je.getMessage());
+
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
+    }
+
+    @ExceptionHandler(value = { MissingRequestCookieException.class })
+    public ResponseEntity<RestResponse<Object>> handleMissingRequestCookieException(
+            MissingRequestCookieException mrce) {
+
+        RestResponse<Object> response = new RestResponse<>();
+
+        response.setMessage("Missing Request Cookie Exception");
+        response.setStatus(HttpStatus.BAD_REQUEST.value());
+        response.setError(mrce.getMessage());
+
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+    }
 }
