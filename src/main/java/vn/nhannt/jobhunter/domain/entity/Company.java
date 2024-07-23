@@ -6,7 +6,7 @@ import java.time.Instant;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
+// import com.fasterxml.jackson.annotation.JsonFormat;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -19,7 +19,7 @@ import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.Setter;
 import vn.nhannt.jobhunter.util.SecurityUtil;
-import vn.nhannt.jobhunter.util.constant.Constants;
+// import vn.nhannt.jobhunter.util.constant.Constants;
 
 @Entity
 @Table(name = "companies")
@@ -44,13 +44,13 @@ public class Company implements Serializable {
     private String logo;
 
     @CreationTimestamp
-    @JsonFormat(pattern = Constants.Datetime, timezone = Constants.GMT7) // return GMT+7, but DB save GMT+0
+    // @JsonFormat(pattern = Constants.Datetime, timezone = Constants.GMT7)
     private Instant createdAt; // Datetime
 
     private String createdBy;
 
     @UpdateTimestamp
-    @JsonFormat(pattern = Constants.Datetime, timezone = Constants.GMT7)
+    // @JsonFormat(pattern = Constants.Datetime, timezone = Constants.GMT7)
     private Instant updatedAt;
 
     private String updatedBy;

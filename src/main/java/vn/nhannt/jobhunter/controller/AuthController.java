@@ -30,130 +30,134 @@ import vn.nhannt.jobhunter.util.error.UniqueException;
 @RequestMapping("/api/v1")
 public class AuthController {
 
-    private AuthenticationManagerBuilder authenticationManagerBuilder;
+        private AuthenticationManagerBuilder authenticationManagerBuilder;
 
-    private SecurityUtil securityUtil;
+        private SecurityUtil securityUtil;
 
-    private UserService userService;
+        private UserService userService;
 
-    private AuthService authService;
+        private AuthService authService;
 
-    @Value(Constants.refreshTokenExpiration)
-    private long refreshTokenExpiration;
+        @Value(Constants.refreshTokenExpiration)
+        private long refreshTokenExpiration;
 
-    public AuthController(
-            AuthenticationManagerBuilder authenticationManagerBuilder,
-            SecurityUtil securityUtil,
-            UserService userService,
-            AuthService authService) {
-        this.authenticationManagerBuilder = authenticationManagerBuilder;
-        this.securityUtil = securityUtil;
-        this.userService = userService;
-        this.authService = authService;
-    }
-
-    // TO DO : đưa vào service
-    @PostMapping("/auth/login")
-    @ApiMessage("Login")
-    public ResponseEntity<ResLoginDTO> login(@Valid @RequestBody LoginDTO loginDTO) {
-        // Nạp input gồm username/password vào Security
-        UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
-                loginDTO.getUsername(), loginDTO.getPassword());
-
-        // xác thực user => cần viết hàm loadUserByUsername
-        // return authentication that is a fully authenticated object
-        Authentication authentication = authenticationManagerBuilder
-                .getObject()
-                .authenticate(authenticationToken);
-
-        // nạp authentication vào Security Context
-        SecurityContextHolder.getContext().setAuthentication(authentication);
-
-        // response the auth user
-        ResLoginDTO resLoginDTO = new ResLoginDTO();
-        User dbUser = this.userService.findByUsername(authentication.getName());
-        if (dbUser != null) {
-            ResLoginDTO.User authUser = new ResLoginDTO.User(dbUser.getId(), dbUser.getName(), dbUser.getEmail());
-            resLoginDTO.setUser(authUser);
+        public AuthController(
+                        AuthenticationManagerBuilder authenticationManagerBuilder,
+                        SecurityUtil securityUtil,
+                        UserService userService,
+                        AuthService authService) {
+                this.authenticationManagerBuilder = authenticationManagerBuilder;
+                this.securityUtil = securityUtil;
+                this.userService = userService;
+                this.authService = authService;
         }
 
-        // response a access token
-        String accessToken = this.securityUtil.createAccessToken(authentication.getName(), resLoginDTO.getUser());
-        resLoginDTO.setAccessToken(accessToken);
+        // TO DO : đưa vào service
+        @PostMapping("/auth/login")
+        @ApiMessage("Login")
+        public ResponseEntity<ResLoginDTO> login(@Valid @RequestBody LoginDTO loginDTO) {
+                // Nạp input gồm username/password vào Security
+                UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
+                                loginDTO.getUsername(), loginDTO.getPassword());
 
-        // update db a refresh token
-        String refreshToken = this.securityUtil.createRefreshToken(resLoginDTO.getUser());
-        this.userService.updateRefreshToken(loginDTO.getUsername(), refreshToken);
+                // xác thực user => cần viết hàm loadUserByUsername
+                // return authentication that is a fully authenticated object
+                Authentication authentication = authenticationManagerBuilder
+                                .getObject()
+                                .authenticate(authenticationToken);
 
-        // set cookie a refresh token
-        ResponseCookie resCookie = ResponseCookie
-                .from("refreshToken", refreshToken)
-                .httpOnly(true) // chỉ cho phép server sử dụng, thay vì client js
-                .secure(true) // chỉ được sử dụng với https, thay vì http
-                .path("/") // chỉ định endpoint được phép dùng cookie
-                .maxAge(refreshTokenExpiration)
-                // .domain("")
-                .build();
+                // nạp authentication vào Security Context
+                SecurityContextHolder.getContext().setAuthentication(authentication);
 
-        return ResponseEntity
-                .ok()
-                .header(HttpHeaders.SET_COOKIE, resCookie.toString())
-                .body(resLoginDTO);
-    }
+                // response the auth user
+                ResLoginDTO resLoginDTO = new ResLoginDTO();
+                User dbUser = this.userService.findByUsername(authentication.getName());
+                if (dbUser != null) {
+                        ResLoginDTO.User authUser = new ResLoginDTO.User(dbUser.getId(), dbUser.getName(),
+                                        dbUser.getEmail());
+                        resLoginDTO.setUser(authUser);
+                }
 
-    // TO DO : đưa vào service
-    @GetMapping("/auth/account")
-    @ApiMessage("Fetch account")
-    public ResponseEntity<ResLoginDTO.User> fetchAccount() {
-        final String email = SecurityUtil.getCurrentUserLogin().isPresent()
-                ? SecurityUtil.getCurrentUserLogin().get()
-                : "";
-        User dbUser = this.userService.findByUsername(email);
-        ResLoginDTO.User authUser = new ResLoginDTO.User();
-        if (dbUser != null) {
-            authUser.setId(dbUser.getId());
-            authUser.setName(dbUser.getName());
-            authUser.setEmail(dbUser.getEmail());
+                // response a access token
+                String accessToken = this.securityUtil.createAccessToken(authentication.getName(),
+                                resLoginDTO.getUser());
+                resLoginDTO.setAccessToken(accessToken);
+
+                // update db a refresh token
+                String refreshToken = this.securityUtil.createRefreshToken(resLoginDTO.getUser());
+                this.userService.updateRefreshToken(loginDTO.getUsername(), refreshToken);
+
+                // set cookie a refresh token
+                ResponseCookie resCookie = ResponseCookie
+                                .from("refresh_token", refreshToken)
+                                .httpOnly(true) // chỉ cho phép server sử dụng, thay vì client js
+                                .secure(true) // chỉ được sử dụng với https, thay vì http
+                                .path("/") // chỉ định endpoint được phép dùng cookie
+                                .maxAge(refreshTokenExpiration)
+                                // .domain("")
+                                .build();
+
+                return ResponseEntity
+                                .ok()
+                                .header(HttpHeaders.SET_COOKIE, resCookie.toString())
+                                .body(resLoginDTO);
         }
-        return ResponseEntity.ok().body(authUser);
-    }
 
-    /**
-     * TO DO bug
-     */
-    @GetMapping("/auth/refresh")
-    @ApiMessage("Refresh token")
-    public ResponseEntity<ResLoginDTO> refreshToken(
-            @CookieValue(name = "refreshToken") String refreshToken) throws UniqueException {
+        // TO DO : đưa vào service
+        @GetMapping("/auth/account")
+        @ApiMessage("Fetch account")
+        public ResponseEntity<ResLoginDTO.ResGetAccount> fetchAccount() {
+                final String email = SecurityUtil.getCurrentUserLogin().isPresent()
+                                ? SecurityUtil.getCurrentUserLogin().get()
+                                : "";
+                User dbUser = this.userService.findByUsername(email);
+                ResLoginDTO.ResGetAccount resGetAccount = new ResLoginDTO.ResGetAccount();
+                ResLoginDTO.User authUser = new ResLoginDTO.User();
+                if (dbUser != null) {
+                        authUser.setId(dbUser.getId());
+                        authUser.setName(dbUser.getName());
+                        authUser.setEmail(dbUser.getEmail());
+                        resGetAccount.setUser(authUser);
+                }
+                return ResponseEntity.ok().body(resGetAccount);
+        }
 
-        AuthService.ResLoginAndCookie resLoginAndCookie = this.authService.new ResLoginAndCookie();
-        resLoginAndCookie = this.authService.refreshToken(refreshToken);
+        /**
+         * TO DO bug
+         */
+        @GetMapping("/auth/refresh")
+        @ApiMessage("Refresh token")
+        public ResponseEntity<ResLoginDTO> refreshToken(
+                        @CookieValue(name = "refresh_token") String refreshToken) throws UniqueException {
 
-        return ResponseEntity
-                .ok()
-                .header(HttpHeaders.SET_COOKIE, resLoginAndCookie.getResCookie())
-                .body(resLoginAndCookie.getResLoginDTO());
-    }
+                AuthService.ResLoginAndCookie resLoginAndCookie = this.authService.new ResLoginAndCookie();
+                resLoginAndCookie = this.authService.refreshToken(refreshToken);
 
-    @GetMapping("/auth/logout")
-    @ApiMessage("Log out")
-    public ResponseEntity<Void> logout() {
-        // logic log out
-        this.authService.logout();
+                return ResponseEntity
+                                .ok()
+                                .header(HttpHeaders.SET_COOKIE, resLoginAndCookie.getResCookie())
+                                .body(resLoginAndCookie.getResLoginDTO());
+        }
 
-        // logic handle cookie at client
-        final ResponseCookie deleteCookie = ResponseCookie
-                .from("refreshToken", null)
-                .httpOnly(true)
-                .secure(true)
-                .path("/")
-                .maxAge(0)
-                .build();
+        @GetMapping("/auth/logout")
+        @ApiMessage("Log out")
+        public ResponseEntity<Void> logout() {
+                // logic log out
+                this.authService.logout();
 
-        // TO DO: dùng .ok()
-        return ResponseEntity
-                .noContent()
-                .header(HttpHeaders.SET_COOKIE, deleteCookie.toString())
-                .build();
-    }
+                // logic handle cookie at client
+                final ResponseCookie deleteCookie = ResponseCookie
+                                .from("refresh_token", null)
+                                .httpOnly(true)
+                                .secure(true)
+                                .path("/")
+                                .maxAge(0)
+                                .build();
+
+                // TO DO: dùng .ok()
+                return ResponseEntity
+                                .noContent()
+                                .header(HttpHeaders.SET_COOKIE, deleteCookie.toString())
+                                .build();
+        }
 }

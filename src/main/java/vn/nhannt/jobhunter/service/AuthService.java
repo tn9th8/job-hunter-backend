@@ -69,7 +69,7 @@ public class AuthService {
         // TO DO: nên đưa cookie vào controller
         // set cookie a refresh token
         ResponseCookie resCookie = ResponseCookie
-                .from("refreshToken", refreshToken)
+                .from("refresh_token", refreshToken)
                 .httpOnly(true) // chỉ cho phép server sử dụng, thay vì client js
                 .secure(true) // chỉ được sử dụng với https, thay vì http
                 .path("/") // chỉ định endpoint được phép dùng cookie
