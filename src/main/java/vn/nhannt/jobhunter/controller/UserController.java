@@ -83,6 +83,7 @@ public class UserController {
         }
     }
 
+    // TO DO: dùng .ok()
     @DeleteMapping("users/{id}")
     @ApiMessage("Delete a user")
     public ResponseEntity<Void> deleteUser(@PathVariable("id") String sId)

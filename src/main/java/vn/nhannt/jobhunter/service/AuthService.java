@@ -66,6 +66,7 @@ public class AuthService {
         String refreshToken = this.securityUtil.createRefreshToken(resLoginDTO.getUser());
         this.userService.updateRefreshToken(email, refreshToken);
 
+        // TO DO: nên đưa cookie vào controller
         // set cookie a refresh token
         ResponseCookie resCookie = ResponseCookie
                 .from("refreshToken", refreshToken)
@@ -77,6 +78,20 @@ public class AuthService {
                 .build();
 
         return this.new ResLoginAndCookie(resCookie.toString(), resLoginDTO);
+    }
+
+    public void logout() {
+        // get the current user from spring context
+        final String email = SecurityUtil.getCurrentUserLogin().isPresent()
+                ? SecurityUtil.getCurrentUserLogin().get()
+                : "";
+
+        // check email is null
+        if (email == null) {
+            throw new IllegalArgumentException("Principal trong Spring Security Context thì null");
+        }
+        // update the refresh token attribute
+        this.userService.updateRefreshToken(email, "");
     }
 
     @Getter

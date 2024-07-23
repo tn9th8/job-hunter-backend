@@ -141,4 +141,17 @@ public class GlobalException {
 
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
     }
+
+    @ExceptionHandler(value = { IllegalArgumentException.class })
+    public ResponseEntity<RestResponse<Object>> handleIllegalArgumentException(
+            IllegalArgumentException iae) {
+
+        RestResponse<Object> response = new RestResponse<>();
+
+        response.setMessage("Illegal Argument Exception");
+        response.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
+        response.setError(iae.getMessage());
+
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+    }
 }

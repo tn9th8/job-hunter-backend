@@ -103,7 +103,7 @@ public class AuthController {
 
     // TO DO : đưa vào service
     @GetMapping("/auth/account")
-    @ApiMessage("Get account")
+    @ApiMessage("Fetch account")
     public ResponseEntity<ResLoginDTO.User> fetchAccount() {
         final String email = SecurityUtil.getCurrentUserLogin().isPresent()
                 ? SecurityUtil.getCurrentUserLogin().get()
@@ -123,7 +123,7 @@ public class AuthController {
      */
     @GetMapping("/auth/refresh")
     @ApiMessage("Refresh token")
-    public ResponseEntity<ResLoginDTO> refeshToken(
+    public ResponseEntity<ResLoginDTO> refreshToken(
             @CookieValue(name = "refreshToken") String refreshToken) throws UniqueException {
 
         AuthService.ResLoginAndCookie resLoginAndCookie = this.authService.new ResLoginAndCookie();
@@ -133,5 +133,27 @@ public class AuthController {
                 .ok()
                 .header(HttpHeaders.SET_COOKIE, resLoginAndCookie.getResCookie())
                 .body(resLoginAndCookie.getResLoginDTO());
+    }
+
+    @GetMapping("/auth/logout")
+    @ApiMessage("Log out")
+    public ResponseEntity<Void> logout() {
+        // logic log out
+        this.authService.logout();
+
+        // logic handle cookie at client
+        final ResponseCookie deleteCookie = ResponseCookie
+                .from("refreshToken", null)
+                .httpOnly(true)
+                .secure(true)
+                .path("/")
+                .maxAge(0)
+                .build();
+
+        // TO DO: dùng .ok()
+        return ResponseEntity
+                .noContent()
+                .header(HttpHeaders.SET_COOKIE, deleteCookie.toString())
+                .build();
     }
 }
