@@ -10,7 +10,6 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import vn.nhannt.jobhunter.domain.dto.Meta;
 import vn.nhannt.jobhunter.domain.dto.ResCreationUserDTO;
 import vn.nhannt.jobhunter.domain.dto.ResPaginationDTO;
 import vn.nhannt.jobhunter.domain.dto.ResUpdateUserDTO;
@@ -61,7 +60,7 @@ public class UserService {
     public ResPaginationDTO findAll(Specification<User> spec, Pageable pageable) {
         final Page<User> pUsers = this.userRepository.findAll(spec, pageable);
 
-        final Meta meta = new Meta();
+        final ResPaginationDTO.Meta meta = new ResPaginationDTO.Meta();
         meta.setPage(pUsers.getNumber() + 1);
         meta.setPageSize(pUsers.getSize());
         meta.setPages(pUsers.getTotalPages());
