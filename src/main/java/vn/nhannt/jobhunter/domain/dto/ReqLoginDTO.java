@@ -2,7 +2,7 @@ package vn.nhannt.jobhunter.domain.dto;
 
 import jakarta.validation.constraints.NotBlank;
 
-public class LoginDTO {
+public class ReqLoginDTO {
 
     @NotBlank(message = "Username field không được để trống")
     private String username;
