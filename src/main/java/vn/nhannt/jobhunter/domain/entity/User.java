@@ -4,9 +4,9 @@ import java.io.Serializable;
 import java.time.Instant;
 
 import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.SQLRestriction;
 import org.hibernate.annotations.UpdateTimestamp;
-
-import com.fasterxml.jackson.annotation.JsonFormat;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -15,6 +15,8 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Table;
@@ -22,7 +24,6 @@ import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;
 import lombok.Setter;
 import vn.nhannt.jobhunter.util.SecurityUtil;
-import vn.nhannt.jobhunter.util.constant.Constants;
 import vn.nhannt.jobhunter.util.constant.GenderEnum;
 
 /**
@@ -31,6 +32,8 @@ import vn.nhannt.jobhunter.util.constant.GenderEnum;
 
 @Entity
 @Table(name = "users")
+@SQLDelete(sql = "UPDATE users SET is_Deleted = true WHERE id=?")
+@SQLRestriction("is_Deleted = false")
 @Getter
 @Setter
 public class User implements Serializable {
@@ -46,7 +49,6 @@ public class User implements Serializable {
     @NotBlank(message = "The email field is not null")
     private String email;
 
-    // @JsonIgnore // ko lấy password => ảnh hưởng đến spring security
     @NotBlank(message = "The password field is not null")
     private String password;
 
@@ -60,17 +62,21 @@ public class User implements Serializable {
     @Column(columnDefinition = "MEDIUMTEXT")
     private String refreshToken;
 
+    @ManyToOne
+    @JoinColumn(name = "company_id")
+    private Company company;
+
     @CreationTimestamp
-    @JsonFormat(pattern = Constants.Datetime, timezone = Constants.GMT7)
     private Instant createdAt;
 
     private String createdBy;
 
     @UpdateTimestamp
-    @JsonFormat(pattern = Constants.Datetime, timezone = Constants.GMT7)
     private Instant updatedAt;
 
     private String updatedBy;
+
+    private boolean isDeleted = Boolean.FALSE;
 
     @PrePersist
     private void setUserBeforeCreation() {

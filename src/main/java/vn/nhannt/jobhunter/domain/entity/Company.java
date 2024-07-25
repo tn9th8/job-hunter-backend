@@ -2,17 +2,24 @@ package vn.nhannt.jobhunter.domain.entity;
 
 import java.io.Serializable;
 import java.time.Instant;
+import java.util.List;
 
 import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.SQLRestriction;
 import org.hibernate.annotations.UpdateTimestamp;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 // import com.fasterxml.jackson.annotation.JsonFormat;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Table;
@@ -23,6 +30,8 @@ import vn.nhannt.jobhunter.util.SecurityUtil;
 
 @Entity
 @Table(name = "companies")
+@SQLDelete(sql = "UPDATE companies SET is_Deleted = true WHERE id=?")
+@SQLRestriction("is_Deleted = false")
 @Getter
 @Setter
 // @Data // auto create toString, constructor => unsafe
@@ -43,17 +52,21 @@ public class Company implements Serializable {
 
     private String logo;
 
+    @OneToMany(mappedBy = "company", fetch = FetchType.LAZY)
+    @JsonIgnore
+    List<User> users;
+
     @CreationTimestamp
-    // @JsonFormat(pattern = Constants.Datetime, timezone = Constants.GMT7)
     private Instant createdAt; // Datetime
 
     private String createdBy;
 
     @UpdateTimestamp
-    // @JsonFormat(pattern = Constants.Datetime, timezone = Constants.GMT7)
     private Instant updatedAt;
 
     private String updatedBy;
+
+    private boolean isDeleted = Boolean.FALSE;
 
     // before go to database
     @PrePersist

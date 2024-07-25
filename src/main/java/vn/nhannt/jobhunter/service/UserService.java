@@ -29,15 +29,25 @@ public class UserService {
 
     private final PasswordEncoder passwordEncoder;
 
-    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder) {
+    private final CompanyService companyService;
+
+    public UserService(
+            UserRepository userRepository,
+            PasswordEncoder passwordEncoder,
+            CompanyService companyService) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
+        this.companyService = companyService;
     }
 
-    public User save(User user) throws UniqueException {
-        // check exists By Email. Return true là chưa tồn tại
+    public User create(User user) throws UniqueException {
+        // check the fk field
+        if (user.getCompany() != null) {
+            user.setCompany(this.companyService.findOne(user.getCompany().getId()));
+        }
+        // check the email field. Return true là tồn tại
         if (userRepository.existsByEmail(user.getEmail())) {
-            throw new UniqueException("Đã tồn tại một User với Email " + user.getEmail());
+            throw new UniqueException("Đã tồn tại User có Email " + user.getEmail());
         }
         // hash Password
         String hashPassword = passwordEncoder.encode(user.getPassword());
@@ -47,13 +57,19 @@ public class UserService {
     }
 
     public User update(User reqUser) throws UniqueException {
-        User existUser = this.findOne(reqUser.getId());
-        existUser.setName(reqUser.getName());
-        existUser.setAge(reqUser.getAge());
-        existUser.setGender(reqUser.getGender());
-        existUser.setAddress(reqUser.getAddress());
+        User currentUser = this.findOne(reqUser.getId());
+        currentUser.setName(reqUser.getName());
+        currentUser.setAge(reqUser.getAge());
+        currentUser.setGender(reqUser.getGender());
+        currentUser.setAddress(reqUser.getAddress());
+        // check the fk field
+        if (currentUser.getCompany() != null) {
+            currentUser.setCompany(
+                    this.companyService.findOne(
+                            currentUser.getCompany().getId()));
+        }
 
-        return this.userRepository.save(existUser);
+        return this.userRepository.save(currentUser);
 
     }
 
@@ -111,44 +127,65 @@ public class UserService {
     }
 
     // map
-    public ResCreationUserDTO convertToResCreationUserDTO(User user) {
-        final ResCreationUserDTO userDTO = new ResCreationUserDTO();
-        userDTO.setId(user.getId());
-        userDTO.setName(user.getName());
-        userDTO.setEmail(user.getEmail());
-        userDTO.setAge(user.getAge());
-        userDTO.setGender(user.getGender());
-        userDTO.setAddress(user.getAddress());
-        userDTO.setCreatedAt(user.getCreatedAt());
-        userDTO.setCreatedBy(user.getCreatedBy());
-        return userDTO;
+    public ResCreationUserDTO convertToResCreationUserDTO(User dbUser) {
+        final ResCreationUserDTO resUser = new ResCreationUserDTO();
+        resUser.setId(dbUser.getId());
+        resUser.setName(dbUser.getName());
+        resUser.setEmail(dbUser.getEmail());
+        resUser.setAge(dbUser.getAge());
+        resUser.setGender(dbUser.getGender());
+        resUser.setAddress(dbUser.getAddress());
+        resUser.setCreatedAt(dbUser.getCreatedAt());
+        resUser.setCreatedBy(dbUser.getCreatedBy());
+        // FK
+        if (dbUser.getCompany() != null) {
+            final ResCreationUserDTO.FkCompany fkCompany = new ResCreationUserDTO.FkCompany(
+                    dbUser.getCompany().getId(),
+                    dbUser.getCompany().getName());
+            resUser.setCompany(fkCompany);
+        }
+        return resUser;
     }
 
-    public ResUpdateUserDTO convertToResUpdateUserDTO(User user) {
-        final ResUpdateUserDTO userDTO = new ResUpdateUserDTO();
-        userDTO.setId(user.getId());
-        userDTO.setName(user.getName());
-        userDTO.setAge(user.getAge());
-        userDTO.setGender(user.getGender());
-        userDTO.setAddress(user.getAddress());
-        userDTO.setUpdatedAt(user.getUpdatedAt());
-        userDTO.setUpdatedBy(user.getUpdatedBy());
-        return userDTO;
+    public ResUpdateUserDTO convertToResUpdateUserDTO(User dbUser) {
+        final ResUpdateUserDTO resUser = new ResUpdateUserDTO();
+        resUser.setId(dbUser.getId());
+        resUser.setName(dbUser.getName());
+        resUser.setAge(dbUser.getAge());
+        resUser.setGender(dbUser.getGender());
+        resUser.setAddress(dbUser.getAddress());
+        resUser.setUpdatedAt(dbUser.getUpdatedAt());
+        resUser.setUpdatedBy(dbUser.getUpdatedBy());
+        // FK
+        if (dbUser.getCompany() != null) {
+            final ResUpdateUserDTO.FkCompany fkCompany = new ResUpdateUserDTO.FkCompany(
+                    dbUser.getCompany().getId(),
+                    dbUser.getCompany().getName());
+            resUser.setCompany(fkCompany);
+        }
+        return resUser;
     }
 
-    public ResUserDTO convertToResUserDTO(User user) {
-        final ResUserDTO userDTO = new ResUserDTO();
-        userDTO.setId(user.getId());
-        userDTO.setName(user.getName());
-        userDTO.setEmail(user.getEmail());
-        userDTO.setAge(user.getAge());
-        userDTO.setGender(user.getGender());
-        userDTO.setAddress(user.getAddress());
-        userDTO.setCreatedAt(user.getCreatedAt());
-        userDTO.setCreatedBy(user.getCreatedBy());
-        userDTO.setUpdatedAt(user.getUpdatedAt());
-        userDTO.setUpdatedBy(user.getUpdatedBy());
-        return userDTO;
+    public ResUserDTO convertToResUserDTO(User dbUser) {
+        final ResUserDTO resUser = new ResUserDTO();
+        resUser.setId(dbUser.getId());
+        resUser.setName(dbUser.getName());
+        resUser.setEmail(dbUser.getEmail());
+        resUser.setAge(dbUser.getAge());
+        resUser.setGender(dbUser.getGender());
+        resUser.setAddress(dbUser.getAddress());
+        resUser.setCreatedAt(dbUser.getCreatedAt());
+        resUser.setCreatedBy(dbUser.getCreatedBy());
+        resUser.setUpdatedAt(dbUser.getUpdatedAt());
+        resUser.setUpdatedBy(dbUser.getUpdatedBy());
+        // FK
+        if (dbUser.getCompany() != null) {
+            final ResUserDTO.FkCompany fkCompany = new ResUserDTO.FkCompany(
+                    dbUser.getCompany().getId(),
+                    dbUser.getCompany().getName());
+            resUser.setCompany(fkCompany);
+        }
+        return resUser;
     }
 
 }

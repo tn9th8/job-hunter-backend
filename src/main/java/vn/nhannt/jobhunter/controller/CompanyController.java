@@ -21,6 +21,7 @@ import vn.nhannt.jobhunter.domain.request.ReqCompanyDTO;
 import vn.nhannt.jobhunter.domain.response.ResPaginationDTO;
 import vn.nhannt.jobhunter.service.CompanyService;
 import vn.nhannt.jobhunter.util.annotation.ApiMessage;
+import vn.nhannt.jobhunter.util.error.UniqueException;
 
 /**
  * TO DO: đưa api versioning vào property
@@ -39,13 +40,13 @@ public class CompanyController {
     @PostMapping("/companies")
     @ApiMessage("create a user")
     public ResponseEntity<Company> createUser(@Valid @RequestBody ReqCompanyDTO reqCompanyDTO) {
-        final Company company = this.companyService.save(reqCompanyDTO);
+        final Company company = this.companyService.create(reqCompanyDTO);
         return ResponseEntity.status(HttpStatus.CREATED).body(company);
     }
 
     @PatchMapping("/companies")
     @ApiMessage("update a user")
-    public ResponseEntity<Company> updateUser(@Valid @RequestBody Company company) {
+    public ResponseEntity<Company> updateUser(@Valid @RequestBody Company company) throws UniqueException {
         final Company updatedCompany = this.companyService.update(company);
         return ResponseEntity.ok(updatedCompany);
     }
@@ -61,7 +62,7 @@ public class CompanyController {
 
     @GetMapping("/companies/{id}")
     @ApiMessage("fetch one user")
-    public ResponseEntity<Company> fetchOneUser(@PathVariable("id") String id) {
+    public ResponseEntity<Company> fetchOneUser(@PathVariable("id") String id) throws UniqueException {
         // TO DO: đưa logic vào service
         try {
             Long validId = Long.valueOf(id);
@@ -76,7 +77,7 @@ public class CompanyController {
 
     @DeleteMapping("/companies/{id}")
     @ApiMessage("delete a user")
-    public ResponseEntity<Void> deleteUser(@PathVariable("id") String id) {
+    public ResponseEntity<Void> deleteUser(@PathVariable("id") String id) throws UniqueException {
         // TO DO: đưa logic vào service
         try {
             Long validId = Long.valueOf(id);

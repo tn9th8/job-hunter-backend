@@ -11,6 +11,7 @@ import vn.nhannt.jobhunter.domain.entity.Company;
 import vn.nhannt.jobhunter.domain.request.ReqCompanyDTO;
 import vn.nhannt.jobhunter.domain.response.ResPaginationDTO;
 import vn.nhannt.jobhunter.repository.CompanyRepository;
+import vn.nhannt.jobhunter.util.error.UniqueException;
 
 @Service
 public class CompanyService {
@@ -24,7 +25,7 @@ public class CompanyService {
     /**
      * create a new company
      */
-    public Company save(ReqCompanyDTO reqCompanyDTO) {
+    public Company create(ReqCompanyDTO reqCompanyDTO) {
         final Company company = new Company();
         company.setName(reqCompanyDTO.getName());
         company.setDescription(reqCompanyDTO.getDescription());
@@ -37,7 +38,7 @@ public class CompanyService {
      * update a existing company
      */
     @SuppressWarnings("null")
-    public Company update(Company company) {
+    public Company update(Company company) throws UniqueException {
         Company existingCompany = this.findOne(company.getId());
 
         if (existingCompany == null) {
@@ -78,16 +79,18 @@ public class CompanyService {
     /**
      * find one company
      */
-    public Company findOne(Long id) {
+    public Company findOne(Long id) throws UniqueException {
         final Optional<Company> optionalCompany = this.companyRepository.findById(id);
-        return optionalCompany.isPresent() == true ? optionalCompany.get() : null;
-        // TO DO: handle exception: optionalCompany is null
+        if (optionalCompany.isPresent() == false) {
+            throw new UniqueException("Không tồn tại Company với Id là " + id);
+        }
+        return optionalCompany.get();
     }
 
-    public void delete(Long validId) {
-        Company existingCompany = this.findOne(validId);
+    public void delete(Long id) throws UniqueException {
+        Company existingCompany = this.findOne(id);
         if (existingCompany != null) {
-            this.companyRepository.deleteById(validId);
+            this.companyRepository.deleteById(id);
         }
         // TO DO: null exception
     }

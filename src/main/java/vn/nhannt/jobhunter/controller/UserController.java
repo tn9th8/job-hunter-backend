@@ -51,7 +51,7 @@ public class UserController {
     public ResponseEntity<ResCreationUserDTO> createUser(@Valid @RequestBody User reqUser) throws UniqueException {
         return ResponseEntity
                 .status(HttpStatus.OK)
-                .body(this.userService.convertToResCreationUserDTO(userService.save(reqUser)));
+                .body(this.userService.convertToResCreationUserDTO(userService.create(reqUser)));
     }
 
     @PatchMapping("users")
@@ -72,14 +72,18 @@ public class UserController {
 
     @GetMapping("users/{id}")
     @ApiMessage("Fetch one user")
-    public ResponseEntity<ResUserDTO> fetchUser(@PathVariable("id") String sId) throws UniqueException {
+    public ResponseEntity<ResUserDTO> fetchOneUser(@PathVariable("id") String sId)
+            throws UniqueException {
         // TO DO: đưa logic vào service
         try {
             Long id = Long.valueOf(sId);
-            return ResponseEntity.ok(this.userService.convertToResUserDTO(this.userService.findOne(id)));
+            return ResponseEntity.ok(
+                    this.userService.convertToResUserDTO(
+                            this.userService.findOne(id)));
 
         } catch (NumberFormatException nfe) {
-            throw new NumberFormatException("Can not convert a id PathVariable from String to Long");
+            throw new NumberFormatException(
+                    "Can not convert a id PathVariable from String to Long");
         }
     }
 
