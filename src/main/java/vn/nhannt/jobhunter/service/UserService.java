@@ -10,11 +10,11 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import vn.nhannt.jobhunter.domain.dto.ResCreationUserDTO;
-import vn.nhannt.jobhunter.domain.dto.ResPaginationDTO;
-import vn.nhannt.jobhunter.domain.dto.ResUpdateUserDTO;
-import vn.nhannt.jobhunter.domain.dto.ResUserDTO;
 import vn.nhannt.jobhunter.domain.entity.User;
+import vn.nhannt.jobhunter.domain.response.ResCreationUserDTO;
+import vn.nhannt.jobhunter.domain.response.ResPaginationDTO;
+import vn.nhannt.jobhunter.domain.response.ResUpdateUserDTO;
+import vn.nhannt.jobhunter.domain.response.ResUserDTO;
 import vn.nhannt.jobhunter.repository.UserRepository;
 import vn.nhannt.jobhunter.util.error.UniqueException;
 

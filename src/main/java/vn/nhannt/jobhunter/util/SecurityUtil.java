@@ -19,7 +19,7 @@ import org.springframework.security.oauth2.jwt.JwtEncoder;
 import org.springframework.security.oauth2.jwt.JwtEncoderParameters;
 import org.springframework.stereotype.Service;
 
-import vn.nhannt.jobhunter.domain.dto.ResLoginDTO;
+import vn.nhannt.jobhunter.domain.response.ResLoginDTO;
 import vn.nhannt.jobhunter.util.constant.Constants;
 
 @Service

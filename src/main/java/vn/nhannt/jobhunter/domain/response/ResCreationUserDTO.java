@@ -1,4 +1,4 @@
-package vn.nhannt.jobhunter.domain.dto;
+package vn.nhannt.jobhunter.domain.response;
 
 import java.time.Instant;
 
@@ -11,7 +11,7 @@ import vn.nhannt.jobhunter.util.constant.GenderEnum;
 
 @Getter
 @Setter
-public class ResUserDTO {
+public class ResCreationUserDTO {
 
     private Long id;
 
@@ -34,8 +34,7 @@ public class ResUserDTO {
 
     private String createdBy;
 
-    @JsonFormat(pattern = Constants.Datetime, timezone = Constants.GMT7)
-    private Instant updatedAt;
+    // private Instant updatedAt;
 
-    private String updatedBy;
+    // private String updatedBy;
 }

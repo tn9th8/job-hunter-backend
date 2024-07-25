@@ -16,11 +16,11 @@ import org.springframework.web.bind.annotation.RestController;
 import com.turkraft.springfilter.boot.Filter;
 
 import jakarta.validation.Valid;
-import vn.nhannt.jobhunter.domain.dto.ResCreationUserDTO;
-import vn.nhannt.jobhunter.domain.dto.ResPaginationDTO;
-import vn.nhannt.jobhunter.domain.dto.ResUpdateUserDTO;
-import vn.nhannt.jobhunter.domain.dto.ResUserDTO;
 import vn.nhannt.jobhunter.domain.entity.User;
+import vn.nhannt.jobhunter.domain.response.ResCreationUserDTO;
+import vn.nhannt.jobhunter.domain.response.ResPaginationDTO;
+import vn.nhannt.jobhunter.domain.response.ResUpdateUserDTO;
+import vn.nhannt.jobhunter.domain.response.ResUserDTO;
 import vn.nhannt.jobhunter.service.UserService;
 import vn.nhannt.jobhunter.util.annotation.ApiMessage;
 import vn.nhannt.jobhunter.util.error.UniqueException;

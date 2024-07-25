@@ -1,4 +1,4 @@
-package vn.nhannt.jobhunter.domain.dto;
+package vn.nhannt.jobhunter.domain.response;
 
 import lombok.Getter;
 import lombok.Setter;
