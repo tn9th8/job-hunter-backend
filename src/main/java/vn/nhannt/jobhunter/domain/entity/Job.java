@@ -11,31 +11,33 @@ import org.hibernate.annotations.UpdateTimestamp;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
-// import com.fasterxml.jackson.annotation.JsonFormat;
-
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.OneToMany;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.ManyToMany;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.Setter;
 import vn.nhannt.jobhunter.util.SecurityUtil;
-// import vn.nhannt.jobhunter.util.constant.Constants;
+import vn.nhannt.jobhunter.util.constant.LevelEnum;
 
 @Entity
-@Table(name = "companies")
-@SQLDelete(sql = "UPDATE companies SET is_Deleted = true WHERE id=?")
+@Table(name = "jobs")
+@SQLDelete(sql = "UPDATE jobs SET is_Deleted = true WHERE id=?")
 @SQLRestriction("is_Deleted = false")
 @Getter
 @Setter
-// @Data // auto create toString, constructor => unsafe
-public class Company implements Serializable {
+public class Job implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
@@ -44,24 +46,33 @@ public class Company implements Serializable {
     private Long id;
 
     private String name;
+    private String location;
+    private double salary;
+    private int quantity;
 
-    @Column(columnDefinition = "MEDIUMTEXT")
-    private String description; // MEDIUM_TEXT of MySQL with 16 MB
+    @Enumerated(EnumType.STRING)
+    private LevelEnum level;
 
-    private String address;
+    @Column(columnDefinition = "LONGTEXT")
+    private String description;
 
-    private String logo;
+    private Instant startDate;
+    private Instant endDate;
+    private boolean isActive;
 
-    @OneToMany(mappedBy = "company", fetch = FetchType.LAZY)
+    // FK
+    @ManyToOne
+    @JoinColumn(name = "company_id")
+    private Company company;
+
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(name = "job_skill", joinColumns = @JoinColumn(name = "job_id"), inverseJoinColumns = @JoinColumn(name = "skill_id"))
     @JsonIgnore
-    List<User> users;
+    private List<Skill> skills;
 
-    @OneToMany(mappedBy = "company", fetch = FetchType.LAZY)
-    @JsonIgnore
-    List<Job> jobs;
-
+    // log
     @CreationTimestamp
-    private Instant createdAt; // Datetime
+    private Instant createdAt;
 
     private String createdBy;
 
@@ -72,20 +83,18 @@ public class Company implements Serializable {
 
     private boolean isDeleted = Boolean.FALSE;
 
-    // before go to database
+    // hooks
     @PrePersist
-    public void setLastPersist() {
-        // this.createdAt = Instant.now();
-        this.createdBy = this.updatedBy = SecurityUtil.getCurrentUserLogin().isPresent() == true
+    private void setUserBeforeCreation() {
+        this.createdBy = this.updatedBy = SecurityUtil.getCurrentUserLogin().isPresent()
                 ? SecurityUtil.getCurrentUserLogin().get()
-                : "";
+                : null;
     }
 
     @PreUpdate
-    public void setLastUpdate() {
-        // this.updatedAt = Instant.now();
-        this.updatedBy = SecurityUtil.getCurrentUserLogin().isPresent() == true
+    private void setUserBeforeUpdate() {
+        this.updatedBy = SecurityUtil.getCurrentUserLogin().isPresent()
                 ? SecurityUtil.getCurrentUserLogin().get()
-                : "";
+                : null;
     }
 }

@@ -11,31 +11,26 @@ import org.hibernate.annotations.UpdateTimestamp;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
-// import com.fasterxml.jackson.annotation.JsonFormat;
-
-import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.OneToMany;
+import jakarta.persistence.ManyToMany;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.Setter;
 import vn.nhannt.jobhunter.util.SecurityUtil;
-// import vn.nhannt.jobhunter.util.constant.Constants;
 
 @Entity
-@Table(name = "companies")
-@SQLDelete(sql = "UPDATE companies SET is_Deleted = true WHERE id=?")
+@Table(name = "skills")
+@SQLDelete(sql = "UPDATE skills SET is_Deleted = true WHERE id=?")
 @SQLRestriction("is_Deleted = false")
 @Getter
 @Setter
-// @Data // auto create toString, constructor => unsafe
-public class Company implements Serializable {
+public class Skill implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
@@ -45,23 +40,14 @@ public class Company implements Serializable {
 
     private String name;
 
-    @Column(columnDefinition = "MEDIUMTEXT")
-    private String description; // MEDIUM_TEXT of MySQL with 16 MB
-
-    private String address;
-
-    private String logo;
-
-    @OneToMany(mappedBy = "company", fetch = FetchType.LAZY)
+    // FK
+    @ManyToMany(fetch = FetchType.LAZY, mappedBy = "skills")
     @JsonIgnore
-    List<User> users;
+    private List<Job> jobs;
 
-    @OneToMany(mappedBy = "company", fetch = FetchType.LAZY)
-    @JsonIgnore
-    List<Job> jobs;
-
+    // log
     @CreationTimestamp
-    private Instant createdAt; // Datetime
+    private Instant createdAt;
 
     private String createdBy;
 
@@ -72,20 +58,18 @@ public class Company implements Serializable {
 
     private boolean isDeleted = Boolean.FALSE;
 
-    // before go to database
+    // hook
     @PrePersist
-    public void setLastPersist() {
-        // this.createdAt = Instant.now();
-        this.createdBy = this.updatedBy = SecurityUtil.getCurrentUserLogin().isPresent() == true
+    private void setUserBeforeCreation() {
+        this.createdBy = this.updatedBy = SecurityUtil.getCurrentUserLogin().isPresent()
                 ? SecurityUtil.getCurrentUserLogin().get()
-                : "";
+                : null;
     }
 
     @PreUpdate
-    public void setLastUpdate() {
-        // this.updatedAt = Instant.now();
-        this.updatedBy = SecurityUtil.getCurrentUserLogin().isPresent() == true
+    private void setUserBeforeUpdate() {
+        this.updatedBy = SecurityUtil.getCurrentUserLogin().isPresent()
                 ? SecurityUtil.getCurrentUserLogin().get()
-                : "";
+                : null;
     }
 }
