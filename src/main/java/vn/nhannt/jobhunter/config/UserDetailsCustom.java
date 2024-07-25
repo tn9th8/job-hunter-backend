@@ -1,4 +1,4 @@
-package vn.nhannt.jobhunter.service;
+package vn.nhannt.jobhunter.config;
 
 import java.util.Collections;
 
@@ -9,6 +9,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Component;
 
 import vn.nhannt.jobhunter.domain.entity.User;
+import vn.nhannt.jobhunter.service.UserService;
 
 @Component("userDetailsService")
 public class UserDetailsCustom implements UserDetailsService {
