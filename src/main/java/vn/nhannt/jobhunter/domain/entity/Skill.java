@@ -26,8 +26,8 @@ import vn.nhannt.jobhunter.util.SecurityUtil;
 
 @Entity
 @Table(name = "skills")
-@SQLDelete(sql = "UPDATE skills SET is_Deleted = true WHERE id=?")
-@SQLRestriction("is_Deleted = false")
+@SQLDelete(sql = "UPDATE skills SET deleted = true WHERE id=?")
+@SQLRestriction("deleted = false")
 @Getter
 @Setter
 public class Skill implements Serializable {
@@ -56,7 +56,7 @@ public class Skill implements Serializable {
 
     private String updatedBy;
 
-    private boolean isDeleted = Boolean.FALSE;
+    private boolean deleted = Boolean.FALSE;
 
     // hook
     @PrePersist

@@ -32,8 +32,8 @@ import vn.nhannt.jobhunter.util.constant.GenderEnum;
 
 @Entity
 @Table(name = "users")
-@SQLDelete(sql = "UPDATE users SET is_Deleted = true WHERE id=?")
-@SQLRestriction("is_Deleted = false")
+@SQLDelete(sql = "UPDATE users SET deleted = true WHERE id=?")
+@SQLRestriction("deleted = false")
 @Getter
 @Setter
 public class User implements Serializable {
@@ -76,7 +76,7 @@ public class User implements Serializable {
 
     private String updatedBy;
 
-    private boolean isDeleted = Boolean.FALSE;
+    private boolean deleted = Boolean.FALSE;
 
     @PrePersist
     private void setUserBeforeCreation() {

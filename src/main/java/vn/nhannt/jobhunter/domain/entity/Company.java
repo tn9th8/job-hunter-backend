@@ -30,8 +30,8 @@ import vn.nhannt.jobhunter.util.SecurityUtil;
 
 @Entity
 @Table(name = "companies")
-@SQLDelete(sql = "UPDATE companies SET is_Deleted = true WHERE id=?")
-@SQLRestriction("is_Deleted = false")
+@SQLDelete(sql = "UPDATE companies SET deleted = true WHERE id=?")
+@SQLRestriction("deleted = false")
 @Getter
 @Setter
 // @Data // auto create toString, constructor => unsafe
@@ -70,7 +70,7 @@ public class Company implements Serializable {
 
     private String updatedBy;
 
-    private boolean isDeleted = Boolean.FALSE;
+    private boolean deleted = Boolean.FALSE;
 
     // before go to database
     @PrePersist

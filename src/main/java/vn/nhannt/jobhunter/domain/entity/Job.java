@@ -9,7 +9,7 @@ import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.SQLRestriction;
 import org.hibernate.annotations.UpdateTimestamp;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -33,8 +33,8 @@ import vn.nhannt.jobhunter.util.constant.LevelEnum;
 
 @Entity
 @Table(name = "jobs")
-@SQLDelete(sql = "UPDATE jobs SET is_Deleted = true WHERE id=?")
-@SQLRestriction("is_Deleted = false")
+@SQLDelete(sql = "UPDATE jobs SET deleted = true WHERE id=?")
+@SQLRestriction("deleted = false")
 @Getter
 @Setter
 public class Job implements Serializable {
@@ -58,7 +58,7 @@ public class Job implements Serializable {
 
     private Instant startDate;
     private Instant endDate;
-    private boolean isActive;
+    private boolean active;
 
     // FK
     @ManyToOne
@@ -67,8 +67,13 @@ public class Job implements Serializable {
 
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "job_skill", joinColumns = @JoinColumn(name = "job_id"), inverseJoinColumns = @JoinColumn(name = "skill_id"))
-    @JsonIgnore
+    @JsonIgnoreProperties(value = { "jobs" })
     private List<Skill> skills;
+    /**
+     * Jobs is master (owner) in many to many relationship => Suy ra:
+     * - it define @JoinTable
+     * - khi xóa Jobs => sẽ dẫn đến xóa record trong JoinTable
+     */
 
     // log
     @CreationTimestamp
@@ -81,7 +86,7 @@ public class Job implements Serializable {
 
     private String updatedBy;
 
-    private boolean isDeleted = Boolean.FALSE;
+    private boolean deleted = Boolean.FALSE;
 
     // hooks
     @PrePersist
