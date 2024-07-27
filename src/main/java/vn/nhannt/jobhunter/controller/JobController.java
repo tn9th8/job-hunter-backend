@@ -19,7 +19,6 @@ import vn.nhannt.jobhunter.domain.entity.Job;
 import vn.nhannt.jobhunter.domain.response.ResJobDTO;
 import vn.nhannt.jobhunter.domain.response.ResPaginationDTO;
 import vn.nhannt.jobhunter.service.JobService;
-import vn.nhannt.jobhunter.util.Mapper;
 import vn.nhannt.jobhunter.util.annotation.ApiMessage;
 
 @RestController
@@ -37,7 +36,7 @@ public class JobController {
     public ResponseEntity<ResJobDTO> create(@RequestBody Job reqJob) {
         return ResponseEntity
                 .status(HttpStatus.CREATED)
-                .body(Mapper.toResJobDTO(
+                .body(ResJobDTO.mappedBy(
                         this.jobService.createJob(reqJob)));
     }
 
@@ -46,7 +45,7 @@ public class JobController {
     public ResponseEntity<ResJobDTO> update(@RequestBody Job reqJob) {
         return ResponseEntity
                 .ok()
-                .body(Mapper.toResJobDTO(
+                .body(ResJobDTO.mappedBy(
                         this.jobService.updateJob(reqJob)));
     }
 
@@ -74,7 +73,7 @@ public class JobController {
     public ResponseEntity<ResJobDTO> getMethodName(@PathVariable("id") Long id) {
         return ResponseEntity
                 .ok()
-                .body(Mapper.toResJobDTO(
+                .body(ResJobDTO.mappedBy(
                         this.jobService.findJobOrException(id)));
     }
 
