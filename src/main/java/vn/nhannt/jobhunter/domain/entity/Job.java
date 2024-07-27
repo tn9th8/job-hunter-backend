@@ -31,6 +31,23 @@ import lombok.Setter;
 import vn.nhannt.jobhunter.util.SecurityUtil;
 import vn.nhannt.jobhunter.util.constant.LevelEnum;
 
+/**
+ * Define Job Entity
+ * 
+ * @Properties
+ *             Long id;
+ *             String name;
+ *             String location;
+ *             double salary;
+ *             int quantity;
+ *             LevelEnum level;
+ *             String description;
+ *             Instant startDate;
+ *             Instant endDate;
+ *             boolean active;
+ *             Company company;
+ *             List<Skill> skills;
+ */
 @Entity
 @Table(name = "jobs")
 @SQLDelete(sql = "UPDATE jobs SET deleted = true WHERE id=?")
@@ -44,7 +61,7 @@ public class Job implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
+    // TO DO @NotBlank
     private String name;
     private String location;
     private double salary;
@@ -65,15 +82,21 @@ public class Job implements Serializable {
     @JoinColumn(name = "company_id")
     private Company company;
 
-    @ManyToMany(fetch = FetchType.LAZY)
-    @JoinTable(name = "job_skill", joinColumns = @JoinColumn(name = "job_id"), inverseJoinColumns = @JoinColumn(name = "skill_id"))
-    @JsonIgnoreProperties(value = { "jobs" })
-    private List<Skill> skills;
-    /**
+    // TO DO: use set instead of list => service check CRUD same skill id
+    /*
+     * TO DO: Soft delete:
+     * - @SQLRestriction("status <> 'DELETED'")
+     * - @SQLJoinTableRestriction("status = 'ACTIVE'")
+     */
+    /*
      * Jobs is master (owner) in many to many relationship => Suy ra:
      * - it define @JoinTable
      * - khi xóa Jobs => sẽ dẫn đến xóa record trong JoinTable
      */
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(name = "job_skill", joinColumns = @JoinColumn(name = "job_id"), inverseJoinColumns = @JoinColumn(name = "skill_id"))
+    @JsonIgnoreProperties(value = { "jobs" })
+    private List<Skill> skills;
 
     // log
     @CreationTimestamp

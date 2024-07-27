@@ -1,5 +1,6 @@
 package vn.nhannt.jobhunter.service;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.domain.Page;
@@ -82,6 +83,10 @@ public class SkillService {
             throw new UniqueException("Đã tồn tại a skill name này");
         }
         return true;
+    }
+
+    public List<Skill> findSkillsByIds(List<Long> ids) {
+        return this.skillRepository.findAllById(ids);
     }
 
 }

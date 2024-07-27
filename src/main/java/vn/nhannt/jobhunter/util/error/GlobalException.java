@@ -5,11 +5,13 @@ import java.util.stream.Collectors;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.oauth2.jwt.JwtException;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
+import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.MissingRequestCookieException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -153,5 +155,31 @@ public class GlobalException {
         response.setError(iae.getMessage());
 
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+    }
+
+    @ExceptionHandler(value = { HttpRequestMethodNotSupportedException.class })
+    public ResponseEntity<RestResponse<Object>> handleHttpRequestMethodNotSupportedException(
+            HttpRequestMethodNotSupportedException hrmnse) {
+
+        RestResponse<Object> response = new RestResponse<>();
+
+        response.setMessage("Http Request Method NotSupported Exception");
+        response.setStatus(HttpStatus.METHOD_NOT_ALLOWED.value());
+        response.setError(hrmnse.getMessage());
+
+        return ResponseEntity.status(HttpStatus.METHOD_NOT_ALLOWED).body(response);
+    }
+
+    @ExceptionHandler(value = { HttpMessageNotReadableException.class })
+    public ResponseEntity<RestResponse<Object>> handleHttpMessageNotReadableException(
+            HttpMessageNotReadableException hmnre) {
+
+        RestResponse<Object> response = new RestResponse<>();
+
+        response.setMessage("Http Message Not Readable Exception");
+        response.setStatus(HttpStatus.BAD_REQUEST.value());
+        response.setError(hmnre.getMessage());
+
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
     }
 }

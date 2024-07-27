@@ -30,7 +30,7 @@ import vn.nhannt.jobhunter.util.SecurityUtil;
 
 @Entity
 @Table(name = "companies")
-@SQLDelete(sql = "UPDATE companies SET deleted = true WHERE id=?")
+@SQLDelete(sql = "UPDATE companies SET b = true WHERE id=?")
 @SQLRestriction("deleted = false")
 @Getter
 @Setter

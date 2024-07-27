@@ -19,7 +19,6 @@ import jakarta.validation.Valid;
 import vn.nhannt.jobhunter.domain.entity.Skill;
 import vn.nhannt.jobhunter.domain.response.ResPaginationDTO;
 import vn.nhannt.jobhunter.service.SkillService;
-import vn.nhannt.jobhunter.util.Mapper;
 import vn.nhannt.jobhunter.util.annotation.ApiMessage;
 import vn.nhannt.jobhunter.util.error.UniqueException;
 
@@ -66,17 +65,16 @@ public class SkillController {
 
     @GetMapping("/skills/{id}")
     @ApiMessage("Fetch one skill")
-    public ResponseEntity<Skill> fetchOne(@PathVariable("id") String sId) {
+    public ResponseEntity<Skill> fetchOne(@PathVariable("id") Long id) {
         return ResponseEntity
                 .ok()
-                .body(this.skillService.findOneSkill(
-                        Mapper.toLong(sId)));
+                .body(this.skillService.findOneSkill(id));
     }
 
     @DeleteMapping("skills/{id}")
     @ApiMessage("Delete a skill")
-    public ResponseEntity<Void> delele(@PathVariable("id") String sId) {
-        this.skillService.deleteSkill(Mapper.toLong(sId));
+    public ResponseEntity<Void> delele(@PathVariable("id") Long id) {
+        this.skillService.deleteSkill(id);
         return ResponseEntity.noContent().build();
     }
 

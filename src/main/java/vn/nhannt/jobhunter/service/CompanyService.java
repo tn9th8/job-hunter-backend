@@ -95,4 +95,19 @@ public class CompanyService {
         // TO DO: null exception
     }
 
+    // others
+    /**
+     * find one company by id
+     * 
+     * @param id Long
+     * @return Company Entity or null
+     */
+    public Company findCompanyById(Long id) {
+        final Optional<Company> optionalCompany = this.companyRepository.findById(id);
+        if (optionalCompany.isPresent() == false) {
+            return null;
+        }
+        return optionalCompany.get();
+    }
+
 }
