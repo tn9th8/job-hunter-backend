@@ -16,6 +16,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.MissingRequestCookieException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.multipart.MaxUploadSizeExceededException;
 import org.springframework.web.servlet.resource.NoResourceFoundException;
 
 import vn.nhannt.jobhunter.domain.response.RestResponse;
@@ -179,6 +180,32 @@ public class GlobalException {
         response.setMessage("Http Message Not Readable Exception");
         response.setStatus(HttpStatus.BAD_REQUEST.value());
         response.setError(hmnre.getMessage());
+
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+    }
+
+    @ExceptionHandler(value = { StorageException.class })
+    public ResponseEntity<RestResponse<Object>> handleUploadFileException(
+            StorageException ule) {
+
+        RestResponse<Object> response = new RestResponse<>();
+
+        response.setMessage("Upload File Exception");
+        response.setStatus(HttpStatus.BAD_REQUEST.value());
+        response.setError(ule.getMessage());
+
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+    }
+
+    @ExceptionHandler(value = { MaxUploadSizeExceededException.class })
+    public ResponseEntity<RestResponse<Object>> handleMaxUploadSizeExceededException(
+            MaxUploadSizeExceededException musee) {
+
+        RestResponse<Object> response = new RestResponse<>();
+
+        response.setMessage("Upload File Exception");
+        response.setStatus(HttpStatus.BAD_REQUEST.value());
+        response.setError(musee.getMessage());
 
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
     }

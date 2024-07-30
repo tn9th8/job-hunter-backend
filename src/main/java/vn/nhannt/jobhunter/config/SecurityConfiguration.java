@@ -46,8 +46,11 @@ public class SecurityConfiguration {
                 .csrf(c -> c.disable())
                 .cors(Customizer.withDefaults())
                 .authorizeHttpRequests(authz -> authz
-                        .requestMatchers("/", "/api/v1/auth/login", "/api/v1/auth/refresh").permitAll()
-                        .anyRequest().authenticated())
+                        .requestMatchers(
+                                "/", "/api/v1/auth/login", "/api/v1/auth/refresh", "/storage/**")
+                        .permitAll()
+                        .anyRequest()
+                        .authenticated())
                 // config jwt => client must send access token
                 .oauth2ResourceServer((oauth2) -> oauth2
                         // cấu hình mặt định, bằng với ....jwt({}))
