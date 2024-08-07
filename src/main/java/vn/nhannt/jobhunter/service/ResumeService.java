@@ -1,6 +1,7 @@
 package vn.nhannt.jobhunter.service;
 
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -11,6 +12,7 @@ import vn.nhannt.jobhunter.domain.entity.Job;
 import vn.nhannt.jobhunter.domain.entity.Resume;
 import vn.nhannt.jobhunter.domain.entity.User;
 import vn.nhannt.jobhunter.domain.response.ResPaginationDTO;
+import vn.nhannt.jobhunter.domain.response.ResResumeDTO;
 import vn.nhannt.jobhunter.repository.ResumeRepository;
 
 @Service
@@ -76,7 +78,9 @@ public class ResumeService {
         final Page<Resume> page = this.resumeRepository.findAll(spec, pageable);
 
         final ResPaginationDTO resPagination = new ResPaginationDTO();
-        resPagination.setResult(page.getContent());
+        resPagination.setResult(page.getContent().stream()
+                .map(resume -> ResResumeDTO.mapFrom(resume))
+                .collect(Collectors.toList()));
 
         final ResPaginationDTO.Meta meta = new ResPaginationDTO.Meta();
         meta.setPage(page.getNumber() + 1);

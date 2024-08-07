@@ -19,6 +19,8 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Table;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
@@ -39,8 +41,12 @@ public class Resume implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    // TO DO @NotBlank
+    // TO DO : validate email by regex
+    @Email
+    @NotBlank(message = "Email property is not null")
     private String email;
+
+    @NotBlank(message = "URL of CV property is not null")
     private String url;
 
     @Enumerated(EnumType.STRING)

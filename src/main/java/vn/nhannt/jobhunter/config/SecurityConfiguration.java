@@ -1,5 +1,8 @@
 package vn.nhannt.jobhunter.config;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
 
@@ -40,22 +43,25 @@ public class SecurityConfiguration {
     }
 
     @Bean
-    public SecurityFilterChain filterChain(HttpSecurity http,
+    public SecurityFilterChain filterChain(
+            HttpSecurity http,
             CustomAuthenticationEntryPoint customAuthenticationEntryPoint) throws Exception {
+
+        final String[] whiteArray = { "/", "/storage/**",
+                "/api/v1/auth/login", "/api/v1/auth/refresh",
+                "/api/v1/companies/**", "api/v1/jobs/**" };
+
         http
                 .csrf(c -> c.disable())
                 .cors(Customizer.withDefaults())
                 .authorizeHttpRequests(authz -> authz
-                        .requestMatchers(
-                                "/", "/api/v1/auth/login", "/api/v1/auth/refresh", "/storage/**")
-                        .permitAll()
-                        .anyRequest()
-                        .authenticated())
+                        .requestMatchers(whiteArray).permitAll()
+                        .anyRequest().authenticated())
                 // config jwt => client must send access token
                 .oauth2ResourceServer((oauth2) -> oauth2
-                        // cấu hình mặt định, bằng với ....jwt({}))
                         .jwt(Customizer.withDefaults())
                         .authenticationEntryPoint(customAuthenticationEntryPoint))
+                // cấu hình mặt định, bằng với ....jwt({}))
                 // .exceptionHandling(
                 // exceptions -> exceptions
                 // .authenticationEntryPoint(customAuthenticationEntryPoint) // 401
