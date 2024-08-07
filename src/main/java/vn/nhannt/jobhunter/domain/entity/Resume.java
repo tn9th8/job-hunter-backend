@@ -19,14 +19,15 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Table;
+import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
 import vn.nhannt.jobhunter.util.SecurityUtil;
 import vn.nhannt.jobhunter.util.constant.StatusEnum;
 
 @Entity
-@Table(name = "users")
-@SQLDelete(sql = "UPDATE users SET deleted = true WHERE id=?")
+@Table(name = "resumes")
+@SQLDelete(sql = "UPDATE resumes SET deleted = true WHERE id=?")
 @SQLRestriction("deleted = false")
 @Getter
 @Setter
@@ -48,10 +49,12 @@ public class Resume implements Serializable {
     // FK
     @ManyToOne
     @JoinColumn(name = "user_id")
+    @NotNull(message = "User property is not null")
     private User user;
 
     @ManyToOne
     @JoinColumn(name = "job_id")
+    @NotNull(message = "Job property is not null")
     private Job job;
 
     // log

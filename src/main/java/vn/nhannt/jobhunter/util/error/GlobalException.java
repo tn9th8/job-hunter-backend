@@ -53,7 +53,7 @@ public class GlobalException {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
     }
 
-    @ExceptionHandler(value = MethodArgumentNotValidException.class)
+    // @ExceptionHandler(value = MethodArgumentNotValidException.class)
     public ResponseEntity<RestResponse<Object>> handleMethodArgumentNotValidException(
             MethodArgumentNotValidException manve) {
 
@@ -77,7 +77,7 @@ public class GlobalException {
                 .collect(Collectors.toList());
 
         RestResponse<Object> response = new RestResponse<>();
-        response.setMessage("Exception occurs");
+        response.setMessage("Method Argument Not Valid Exception");
         response.setStatus(HttpStatus.BAD_REQUEST.value());
         response.setError(errors.size() > 1 ? errors : errors.get(0));
 

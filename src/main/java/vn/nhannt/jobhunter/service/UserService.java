@@ -93,10 +93,10 @@ public class UserService {
         return resPaginationDTO;
     }
 
-    public User findOne(Long id) throws UniqueException {
+    public User findOne(Long id) {
         final Optional<User> optionalUser = this.userRepository.findById(id);
         if (optionalUser.isPresent() == false) {
-            throw new UniqueException("Không tồn tại User với Id là " + id);
+            throw new IllegalArgumentException("User is not found with " + id);
         }
         return optionalUser.get();
     }

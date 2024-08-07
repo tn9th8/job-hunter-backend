@@ -80,7 +80,7 @@ public class JobService {
     public Job findJobOrException(Long id) {
         final Optional<Job> optionalJob = this.jobRepository.findById(id); // check not null
         if (!optionalJob.isPresent()) {
-            throw new IllegalArgumentException("Job not found");
+            throw new IllegalArgumentException("Job is not found with " + id);
         }
         return optionalJob.get();
     }
