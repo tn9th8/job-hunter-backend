@@ -2,38 +2,27 @@ package vn.nhannt.jobhunter.domain.entity;
 
 import java.io.Serializable;
 import java.time.Instant;
-import java.util.List;
 
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.SQLRestriction;
 import org.hibernate.annotations.UpdateTimestamp;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-
-import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
-import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToMany;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Table;
-import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;
 import lombok.Setter;
 import vn.nhannt.jobhunter.util.SecurityUtil;
-import vn.nhannt.jobhunter.util.constant.GenderEnum;
-
-/**
- * A User.
- */
+import vn.nhannt.jobhunter.util.constant.StatusEnum;
 
 @Entity
 @Table(name = "users")
@@ -41,7 +30,7 @@ import vn.nhannt.jobhunter.util.constant.GenderEnum;
 @SQLRestriction("deleted = false")
 @Getter
 @Setter
-public class User implements Serializable {
+public class Resume implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
@@ -49,33 +38,23 @@ public class User implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String name;
-
-    @NotBlank(message = "The email field is not null")
+    // TO DO @NotBlank
     private String email;
-
-    @NotBlank(message = "The password field is not null")
-    private String password;
-
-    private int age;
+    private String url;
 
     @Enumerated(EnumType.STRING)
-    private GenderEnum gender;
-
-    private String address;
-
-    @Column(columnDefinition = "MEDIUMTEXT")
-    private String refreshToken;
+    private StatusEnum status;
 
     // FK
     @ManyToOne
-    @JoinColumn(name = "company_id")
-    private Company company;
+    @JoinColumn(name = "user_id")
+    private User user;
 
-    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
-    @JsonIgnore
-    List<Resume> resumes;
+    @ManyToOne
+    @JoinColumn(name = "job_id")
+    private Job job;
 
+    // log
     @CreationTimestamp
     private Instant createdAt;
 
@@ -89,16 +68,17 @@ public class User implements Serializable {
     private boolean deleted = Boolean.FALSE;
 
     @PrePersist
-    private void setUserBeforeCreation() {
+    private void setBeforeCreate() {
         this.createdBy = this.updatedBy = SecurityUtil.getCurrentUserLogin().isPresent()
                 ? SecurityUtil.getCurrentUserLogin().get()
                 : null;
     }
 
     @PreUpdate
-    private void setUserBeforeUpdate() {
+    private void setBeforeUpdate() {
         this.updatedBy = SecurityUtil.getCurrentUserLogin().isPresent()
                 ? SecurityUtil.getCurrentUserLogin().get()
                 : null;
     }
+
 }
