@@ -56,25 +56,31 @@ public class JobService {
 
         // check id
         final Job currentJob = this.findJobOrException(reqJob.getId());
+
         // check skills
         if (reqJob.getSkills() != null) {
             final List<Long> skillIds = reqJob.getSkills().stream()
                     .map(skill -> skill.getId())
                     .collect(Collectors.toList());
             final List<Skill> dbSkills = this.skillService.findSkillsByIds(skillIds);
-            reqJob.setSkills(dbSkills);
+            currentJob.setSkills(dbSkills);
         }
         // check company
         if (reqJob.getCompany() != null) {
             final Company dbCompany = this.companyService.findCompanyById(
                     reqJob.getCompany().getId());
-            reqJob.setCompany(dbCompany);
+            currentJob.setCompany(dbCompany);
         }
-        // handle the put method
-        reqJob.setCreatedAt(currentJob.getCreatedAt());
-        reqJob.setCreatedBy(currentJob.getCreatedBy());
-        // update
-        return this.jobRepository.save(reqJob);
+        // update partial
+        currentJob.setName(reqJob.getName());
+        currentJob.setSalary(reqJob.getSalary());
+        currentJob.setQuantity(reqJob.getQuantity());
+        currentJob.setLocation(reqJob.getLocation());
+        currentJob.setLevel(reqJob.getLevel());
+        currentJob.setStartDate(reqJob.getStartDate());
+        currentJob.setEndDate(reqJob.getEndDate());
+        currentJob.setActive(reqJob.isActive());
+        return this.jobRepository.save(currentJob);
     }
 
     public Job findJobOrException(Long id) {

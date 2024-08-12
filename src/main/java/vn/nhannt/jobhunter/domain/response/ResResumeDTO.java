@@ -21,6 +21,7 @@ public class ResResumeDTO {
 
     private UserKey user;
     private JobKey job;
+    private String companyName;
 
     @Getter
     @Setter
@@ -47,6 +48,7 @@ public class ResResumeDTO {
                 dbResume.getUrl(),
                 dbResume.getStatus(),
                 null,
+                null,
                 null);
         // check user
         if (dbResume.getUser() != null) {
@@ -54,7 +56,6 @@ public class ResResumeDTO {
                     dbResume.getUser().getId(),
                     dbResume.getUser().getName());
             resResume.setUser(userKey);
-
         }
         // check job
         if (dbResume.getJob() != null) {
@@ -62,6 +63,7 @@ public class ResResumeDTO {
                     dbResume.getJob().getId(),
                     dbResume.getJob().getName());
             resResume.setJob(jobKey);
+            resResume.setCompanyName(dbResume.getJob().getCompany().getName());
         }
 
         return resResume;
