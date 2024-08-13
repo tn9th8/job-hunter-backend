@@ -1,15 +1,22 @@
 package vn.nhannt.jobhunter.controller;
 
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.turkraft.springfilter.boot.Filter;
+
 import jakarta.validation.Valid;
 import vn.nhannt.jobhunter.domain.entity.Role;
+import vn.nhannt.jobhunter.domain.response.ResPaginationDTO;
 import vn.nhannt.jobhunter.service.RoleService;
 import vn.nhannt.jobhunter.util.annotation.ApiMessage;
 import vn.nhannt.jobhunter.util.error.UniqueException;
@@ -37,6 +44,21 @@ public class RoleController {
     public ResponseEntity<Role> update(@Valid @RequestBody Role reqRole) throws UniqueException {
         return ResponseEntity.ok()
                 .body(this.roleService.updateRole(reqRole));
+    }
+
+    @GetMapping("/roles/{id}")
+    public ResponseEntity<Role> fetchOne(@PathVariable("id") Long id) {
+        return ResponseEntity.ok()
+                .body(this.roleService.findRole(id));
+    }
+
+    @GetMapping("/roles")
+    public ResponseEntity<ResPaginationDTO> fetchAll(
+            @Filter Specification<Role> spec,
+            Pageable pageable) {
+        return ResponseEntity
+                .ok()
+                .body(this.roleService.findRoles(spec, pageable));
     }
 
 }

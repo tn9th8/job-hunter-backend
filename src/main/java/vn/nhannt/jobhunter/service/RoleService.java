@@ -4,11 +4,15 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import jakarta.validation.Valid;
 import vn.nhannt.jobhunter.domain.entity.Permission;
 import vn.nhannt.jobhunter.domain.entity.Role;
+import vn.nhannt.jobhunter.domain.response.ResPaginationDTO;
 import vn.nhannt.jobhunter.repository.RoleRepository;
 import vn.nhannt.jobhunter.util.error.UniqueException;
 
@@ -60,7 +64,7 @@ public class RoleService {
         return this.roleRepository.save(currentRole);
     }
 
-    public Role findRole(Long id) throws UniqueException {
+    public Role findRole(Long id) {
         final Optional<Role> optRole = this.roleRepository.findById(id);
         if (optRole.isEmpty()) {
             throw new IllegalArgumentException("Role id " + id + " is not found");
@@ -74,6 +78,22 @@ public class RoleService {
             throw new UniqueException("Role name " + name + " is exist");
         }
         return false;
+    }
+
+    public ResPaginationDTO findRoles(Specification<Role> spec, Pageable pageable) {
+        final Page<Role> page = this.roleRepository.findAll(spec, pageable);
+
+        final ResPaginationDTO resPagination = new ResPaginationDTO();
+        resPagination.setResult(page.getContent());
+
+        final ResPaginationDTO.Meta meta = new ResPaginationDTO.Meta();
+        meta.setPage(page.getNumber() + 1);
+        meta.setPageSize(page.getSize());
+        meta.setPages(page.getTotalPages());
+        meta.setTotal(page.getTotalElements());
+        resPagination.setMeta(meta);
+
+        return resPagination;
     }
 
 }
