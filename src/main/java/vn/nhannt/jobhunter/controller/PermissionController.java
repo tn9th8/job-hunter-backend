@@ -1,5 +1,7 @@
 package vn.nhannt.jobhunter.controller;
 
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -10,8 +12,11 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.turkraft.springfilter.boot.Filter;
+
 import jakarta.validation.Valid;
 import vn.nhannt.jobhunter.domain.entity.Permission;
+import vn.nhannt.jobhunter.domain.response.ResPaginationDTO;
 import vn.nhannt.jobhunter.service.PermissionService;
 import vn.nhannt.jobhunter.util.annotation.ApiMessage;
 import vn.nhannt.jobhunter.util.error.UniqueException;
@@ -47,6 +52,16 @@ public class PermissionController {
     public ResponseEntity<Permission> fetchOne(@PathVariable("id") Long id) {
         return ResponseEntity
                 .ok(this.permissionService.findPermissionOrExcept(id));
+    }
+
+    @ApiMessage("Fetch all permission")
+    @GetMapping("/permissions")
+    public ResponseEntity<ResPaginationDTO> fetchAll(
+            @Filter Specification<Permission> spec,
+            Pageable pageable) {
+        return ResponseEntity
+                .ok()
+                .body(this.permissionService.findPermissions(spec, pageable));
     }
 
 }

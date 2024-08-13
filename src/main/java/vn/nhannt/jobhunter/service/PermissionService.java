@@ -2,9 +2,13 @@ package vn.nhannt.jobhunter.service;
 
 import java.util.Optional;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import vn.nhannt.jobhunter.domain.entity.Permission;
+import vn.nhannt.jobhunter.domain.response.ResPaginationDTO;
 import vn.nhannt.jobhunter.repository.PermissionRepository;
 import vn.nhannt.jobhunter.util.error.UniqueException;
 
@@ -54,6 +58,22 @@ public class PermissionService {
             throw new UniqueException("Permission already exists");
         }
         return false;
+    }
+
+    public ResPaginationDTO findPermissions(Specification<Permission> spec, Pageable pageable) {
+        final Page<Permission> page = this.permissionRepository.findAll(spec, pageable);
+
+        final ResPaginationDTO resPagination = new ResPaginationDTO();
+        resPagination.setResult(page.getContent());
+
+        final ResPaginationDTO.Meta meta = new ResPaginationDTO.Meta();
+        meta.setPage(page.getNumber() + 1);
+        meta.setPageSize(page.getSize());
+        meta.setPages(page.getTotalPages());
+        meta.setTotal(page.getTotalElements());
+        resPagination.setMeta(meta);
+
+        return resPagination;
     }
 
 }
