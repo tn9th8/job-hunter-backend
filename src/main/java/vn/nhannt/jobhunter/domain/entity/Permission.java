@@ -64,8 +64,8 @@ public class Permission implements Serializable {
 
     // log
     @CreationTimestamp
-    private String createdBy;
     private Instant createdAt;
+    private String createdBy;
 
     @UpdateTimestamp
     private Instant updatedAt;
