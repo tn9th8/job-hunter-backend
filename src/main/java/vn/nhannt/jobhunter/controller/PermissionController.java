@@ -51,7 +51,7 @@ public class PermissionController {
     @GetMapping("/permissions/{id}")
     public ResponseEntity<Permission> fetchOne(@PathVariable("id") Long id) {
         return ResponseEntity
-                .ok(this.permissionService.findPermissionOrExcept(id));
+                .ok(this.permissionService.findPermission(id));
     }
 
     @ApiMessage("Fetch all permission")

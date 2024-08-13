@@ -1,5 +1,6 @@
 package vn.nhannt.jobhunter.service;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.domain.Page;
@@ -30,7 +31,7 @@ public class PermissionService {
 
     public Permission updatePermission(Permission reqPermission) throws UniqueException {
         // check id
-        final Permission currentPermission = this.findPermissionOrExcept(reqPermission.getId());
+        final Permission currentPermission = this.findPermission(reqPermission.getId());
         // check exist
         this.isExistPermission(reqPermission);
         // update partial
@@ -41,23 +42,12 @@ public class PermissionService {
         return this.permissionRepository.save(currentPermission);
     }
 
-    public Permission findPermissionOrExcept(Long id) {
+    public Permission findPermission(Long id) {
         final Optional<Permission> optPermission = this.permissionRepository.findById(id);
         if (optPermission.isEmpty()) {
             throw new IllegalArgumentException("Permission is not found with " + id);
         }
         return optPermission.get();
-    }
-
-    // others
-    public boolean isExistPermission(Permission permission) throws UniqueException {
-        if (this.permissionRepository.existsByApiPathAndMethodAndModule(
-                permission.getApiPath(),
-                permission.getMethod(),
-                permission.getModule())) {
-            throw new UniqueException("Permission already exists");
-        }
-        return false;
     }
 
     public ResPaginationDTO findPermissions(Specification<Permission> spec, Pageable pageable) {
@@ -74,6 +64,21 @@ public class PermissionService {
         resPagination.setMeta(meta);
 
         return resPagination;
+    }
+
+    // others
+    public boolean isExistPermission(Permission permission) throws UniqueException {
+        if (this.permissionRepository.existsByApiPathAndMethodAndModule(
+                permission.getApiPath(),
+                permission.getMethod(),
+                permission.getModule())) {
+            throw new UniqueException("Permission already exists");
+        }
+        return false;
+    }
+
+    public List<Permission> findPermissionsByIds(List<Long> ids) {
+        return this.permissionRepository.findAllById(ids);
     }
 
 }

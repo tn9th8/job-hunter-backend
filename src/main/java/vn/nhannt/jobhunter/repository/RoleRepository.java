@@ -8,7 +8,8 @@ import vn.nhannt.jobhunter.domain.entity.Role;
 
 @Repository
 public interface RoleRepository extends
-        JpaRepository<Role, Long>,
-        JpaSpecificationExecutor<Role> {
+                JpaRepository<Role, Long>,
+                JpaSpecificationExecutor<Role> {
+        boolean existsByName(String name);
 
 }
