@@ -4,6 +4,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -51,7 +52,7 @@ public class PermissionController {
     @GetMapping("/permissions/{id}")
     public ResponseEntity<Permission> fetchOne(@PathVariable("id") Long id) {
         return ResponseEntity
-                .ok(this.permissionService.findPermission(id));
+                .ok(this.permissionService.findPermissionById(id));
     }
 
     @ApiMessage("Fetch all permission")
@@ -62,6 +63,13 @@ public class PermissionController {
         return ResponseEntity
                 .ok()
                 .body(this.permissionService.findPermissions(spec, pageable));
+    }
+
+    @ApiMessage("Delete a permission")
+    @DeleteMapping("permissions/{id}")
+    public ResponseEntity<Void> delete(@PathVariable("id") Long id) {
+        this.permissionService.deletePermissionById(id);
+        return ResponseEntity.noContent().build();
     }
 
 }

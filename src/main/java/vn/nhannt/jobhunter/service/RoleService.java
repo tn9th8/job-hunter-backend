@@ -45,10 +45,10 @@ public class RoleService {
     }
 
     public Role updateRole(Role reqRole) throws UniqueException {
-        // check name
-        this.isExistName(reqRole.getName());
         // check id
-        final Role currentRole = this.findRole(reqRole.getId());
+        final Role currentRole = this.findRoleById(reqRole.getId());
+        // check name
+        this.isExistNameAndNotId(reqRole.getName(), reqRole.getId());
         // check permissions
         if (reqRole.getPermissions() != null) {
             final List<Long> permissionIds = reqRole.getPermissions().stream()
@@ -64,20 +64,18 @@ public class RoleService {
         return this.roleRepository.save(currentRole);
     }
 
-    public Role findRole(Long id) {
+    public void deleteById(Long id) {
+        // check id, then delete
+        this.findRoleById(id);
+        this.roleRepository.deleteById(id);
+    }
+
+    public Role findRoleById(Long id) {
         final Optional<Role> optRole = this.roleRepository.findById(id);
         if (optRole.isEmpty()) {
             throw new IllegalArgumentException("Role id " + id + " is not found");
         }
         return optRole.get();
-    }
-
-    // others
-    public boolean isExistName(String name) throws UniqueException {
-        if (this.roleRepository.existsByName(name)) {
-            throw new UniqueException("Role name " + name + " is exist");
-        }
-        return false;
     }
 
     public ResPaginationDTO findRoles(Specification<Role> spec, Pageable pageable) {
@@ -94,6 +92,21 @@ public class RoleService {
         resPagination.setMeta(meta);
 
         return resPagination;
+    }
+
+    // others
+    public boolean isExistName(String name) throws UniqueException {
+        if (this.roleRepository.existsByName(name)) {
+            throw new UniqueException("Role name " + name + " is exist");
+        }
+        return false;
+    }
+
+    public boolean isExistNameAndNotId(String name, Long id) throws UniqueException {
+        if (this.roleRepository.existsByIdNotAndName(id, name)) {
+            throw new UniqueException("Role name " + name + " is exist");
+        }
+        return false;
     }
 
 }

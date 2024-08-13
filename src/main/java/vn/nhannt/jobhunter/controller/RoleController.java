@@ -4,6 +4,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -31,7 +32,7 @@ public class RoleController {
         this.roleService = roleService;
     }
 
-    @ApiMessage("Create a permission")
+    @ApiMessage("Create a role")
     @PostMapping("/roles")
     public ResponseEntity<Role> create(@Valid @RequestBody Role reqRole)
             throws UniqueException {
@@ -39,19 +40,28 @@ public class RoleController {
                 .body(this.roleService.createRole(reqRole));
     }
 
-    @ApiMessage("Update a permission")
+    @ApiMessage("Update a role")
     @PatchMapping("/roles")
     public ResponseEntity<Role> update(@Valid @RequestBody Role reqRole) throws UniqueException {
         return ResponseEntity.ok()
                 .body(this.roleService.updateRole(reqRole));
     }
 
+    @ApiMessage("Delete a role")
+    @DeleteMapping("/roles/{id}")
+    public ResponseEntity<Void> delete(@PathVariable("id") Long id) {
+        this.roleService.deleteById(id);
+        return ResponseEntity.noContent().build();
+    }
+
+    @ApiMessage("Get a role")
     @GetMapping("/roles/{id}")
     public ResponseEntity<Role> fetchOne(@PathVariable("id") Long id) {
         return ResponseEntity.ok()
-                .body(this.roleService.findRole(id));
+                .body(this.roleService.findRoleById(id));
     }
 
+    @ApiMessage("Get all role")
     @GetMapping("/roles")
     public ResponseEntity<ResPaginationDTO> fetchAll(
             @Filter Specification<Role> spec,

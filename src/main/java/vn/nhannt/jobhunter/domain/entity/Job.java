@@ -88,9 +88,9 @@ public class Job implements Serializable {
     @JsonIgnore
     List<Resume> resumes;
 
-    // TO DO: use set instead of list => service check CRUD same skill id
     /*
-     * TO DO: Soft delete:
+     * TO DO: use set instead of list => service check CRUD same skill id
+     * TO DO: Soft delete for many to many:
      * - @SQLRestriction("status <> 'DELETED'")
      * - @SQLJoinTableRestriction("status = 'ACTIVE'")
      */

@@ -31,7 +31,7 @@ public class PermissionService {
 
     public Permission updatePermission(Permission reqPermission) throws UniqueException {
         // check id
-        final Permission currentPermission = this.findPermission(reqPermission.getId());
+        final Permission currentPermission = this.findPermissionById(reqPermission.getId());
         // check exist
         this.isExistPermission(reqPermission);
         // update partial
@@ -42,7 +42,19 @@ public class PermissionService {
         return this.permissionRepository.save(currentPermission);
     }
 
-    public Permission findPermission(Long id) {
+    public void deletePermissionById(Long id) {
+        // check id
+        final Permission currentPermission = this.findPermissionById(id);
+        // delete reference role_permissions
+        currentPermission.getRoles().forEach(role -> {
+            role.getPermissions().remove(currentPermission);
+        });
+
+        // delete permission
+        this.permissionRepository.deleteById(id);
+    }
+
+    public Permission findPermissionById(Long id) {
         final Optional<Permission> optPermission = this.permissionRepository.findById(id);
         if (optPermission.isEmpty()) {
             throw new IllegalArgumentException("Permission is not found with " + id);
