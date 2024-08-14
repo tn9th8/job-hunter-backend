@@ -77,9 +77,8 @@ public class UserController {
         // TO DO: đưa logic vào service
         try {
             Long id = Long.valueOf(sId);
-            return ResponseEntity.ok(
-                    this.userService.convertToResUserDTO(
-                            this.userService.findOne(id)));
+            return ResponseEntity.ok(ResUserDTO.mapFrom(
+                    this.userService.findOne(id)));
 
         } catch (NumberFormatException nfe) {
             throw new NumberFormatException(

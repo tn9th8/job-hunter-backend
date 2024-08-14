@@ -10,6 +10,7 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import vn.nhannt.jobhunter.domain.entity.Role;
 import vn.nhannt.jobhunter.domain.entity.User;
 import vn.nhannt.jobhunter.domain.response.ResCreationUserDTO;
 import vn.nhannt.jobhunter.domain.response.ResPaginationDTO;
@@ -31,13 +32,17 @@ public class UserService {
 
     private final CompanyService companyService;
 
+    private final RoleService roleService;
+
     public UserService(
             UserRepository userRepository,
             PasswordEncoder passwordEncoder,
-            CompanyService companyService) {
+            CompanyService companyService,
+            RoleService roleService) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.companyService = companyService;
+        this.roleService = roleService;
     }
 
     public User create(User user) throws UniqueException {
@@ -45,6 +50,11 @@ public class UserService {
         if (user.getCompany() != null) {
             user.setCompany(this.companyService.findOne(user.getCompany().getId()));
         }
+        if (user.getRole() != null) {
+            Role role = this.roleService.findRoleById(user.getRole().getId());
+            user.setRole(role != null ? role : null);
+        }
+
         // check the email field. Return true là tồn tại
         if (userRepository.existsByEmail(user.getEmail())) {
             throw new UniqueException("Đã tồn tại User có Email " + user.getEmail());
@@ -68,6 +78,11 @@ public class UserService {
                     this.companyService.findOne(
                             currentUser.getCompany().getId()));
         }
+        // check role
+        if (reqUser.getRole() != null) {
+            Role role = this.roleService.findRoleById(reqUser.getRole().getId());
+            currentUser.setRole(role != null ? role : null);
+        }
 
         return this.userRepository.save(currentUser);
 
@@ -83,7 +98,7 @@ public class UserService {
         meta.setTotal(pUsers.getTotalElements());
 
         List<ResUserDTO> result = pUsers.getContent().stream()
-                .map(user -> this.convertToResUserDTO(user))
+                .map(user -> ResUserDTO.mapFrom(user))
                 .collect(Collectors.toList());
 
         final ResPaginationDTO resPaginationDTO = new ResPaginationDTO();
@@ -159,28 +174,6 @@ public class UserService {
         // FK
         if (dbUser.getCompany() != null) {
             final ResUpdateUserDTO.FkCompany fkCompany = new ResUpdateUserDTO.FkCompany(
-                    dbUser.getCompany().getId(),
-                    dbUser.getCompany().getName());
-            resUser.setCompany(fkCompany);
-        }
-        return resUser;
-    }
-
-    public ResUserDTO convertToResUserDTO(User dbUser) {
-        final ResUserDTO resUser = new ResUserDTO();
-        resUser.setId(dbUser.getId());
-        resUser.setName(dbUser.getName());
-        resUser.setEmail(dbUser.getEmail());
-        resUser.setAge(dbUser.getAge());
-        resUser.setGender(dbUser.getGender());
-        resUser.setAddress(dbUser.getAddress());
-        resUser.setCreatedAt(dbUser.getCreatedAt());
-        resUser.setCreatedBy(dbUser.getCreatedBy());
-        resUser.setUpdatedAt(dbUser.getUpdatedAt());
-        resUser.setUpdatedBy(dbUser.getUpdatedBy());
-        // FK
-        if (dbUser.getCompany() != null) {
-            final ResUserDTO.FkCompany fkCompany = new ResUserDTO.FkCompany(
                     dbUser.getCompany().getId(),
                     dbUser.getCompany().getName());
             resUser.setCompany(fkCompany);

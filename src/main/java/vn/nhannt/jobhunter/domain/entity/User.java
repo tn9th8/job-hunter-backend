@@ -76,6 +76,11 @@ public class User implements Serializable {
     @JsonIgnore
     List<Resume> resumes;
 
+    @ManyToOne
+    @JoinColumn(name = "role_id")
+    private Role role;
+
+    // FK
     @CreationTimestamp
     private Instant createdAt;
 
