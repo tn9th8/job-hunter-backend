@@ -54,16 +54,20 @@ public class AuthService {
         ResLoginDTO resLoginDTO = new ResLoginDTO();
         User dbUser = this.userService.findByUsername(email);
         if (dbUser != null) {
-            ResLoginDTO.User loginUser = new ResLoginDTO.User(dbUser.getId(), dbUser.getName(), dbUser.getEmail());
+            ResLoginDTO.User loginUser = new ResLoginDTO.User(
+                    dbUser.getId(),
+                    dbUser.getName(),
+                    dbUser.getEmail(),
+                    dbUser.getRole());
             resLoginDTO.setUser(loginUser);
         }
 
-        // response a access token
-        String accessToken = this.securityUtil.createAccessToken(email, resLoginDTO.getUser());
+        // create a access token
+        String accessToken = this.securityUtil.createAccessToken(resLoginDTO);
         resLoginDTO.setAccessToken(accessToken);
 
-        // update db a refresh token
-        String refreshToken = this.securityUtil.createRefreshToken(resLoginDTO.getUser());
+        // update a refresh token
+        String refreshToken = this.securityUtil.createRefreshToken(resLoginDTO);
         this.userService.updateRefreshToken(email, refreshToken);
 
         // TO DO: nên đưa cookie vào controller

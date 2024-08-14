@@ -73,18 +73,20 @@ public class AuthController {
                 ResLoginDTO resLoginDTO = new ResLoginDTO();
                 User dbUser = this.userService.findByUsername(authentication.getName());
                 if (dbUser != null) {
-                        ResLoginDTO.User authUser = new ResLoginDTO.User(dbUser.getId(), dbUser.getName(),
-                                        dbUser.getEmail());
+                        ResLoginDTO.User authUser = new ResLoginDTO.User(
+                                        dbUser.getId(),
+                                        dbUser.getName(),
+                                        dbUser.getEmail(),
+                                        dbUser.getRole());
                         resLoginDTO.setUser(authUser);
                 }
 
                 // response a access token
-                String accessToken = this.securityUtil.createAccessToken(authentication.getName(),
-                                resLoginDTO.getUser());
+                String accessToken = this.securityUtil.createAccessToken(resLoginDTO);
                 resLoginDTO.setAccessToken(accessToken);
 
                 // update db a refresh token
-                String refreshToken = this.securityUtil.createRefreshToken(resLoginDTO.getUser());
+                String refreshToken = this.securityUtil.createRefreshToken(resLoginDTO);
                 this.userService.updateRefreshToken(loginDTO.getUsername(), refreshToken);
 
                 // set cookie a refresh token
@@ -117,6 +119,7 @@ public class AuthController {
                         authUser.setId(dbUser.getId());
                         authUser.setName(dbUser.getName());
                         authUser.setEmail(dbUser.getEmail());
+                        authUser.setRole(dbUser.getRole());
                         resGetAccount.setUser(authUser);
                 }
                 return ResponseEntity.ok().body(resGetAccount);
@@ -128,13 +131,13 @@ public class AuthController {
         @GetMapping("/auth/refresh")
         @ApiMessage("Refresh token")
         public ResponseEntity<ResLoginDTO> refreshToken(
-                        @CookieValue(name = "refresh_token") String refreshToken) throws UniqueException {
+                        @CookieValue(name = "refresh_token") String refreshToken)
+                        throws UniqueException {
 
                 AuthService.ResLoginAndCookie resLoginAndCookie = this.authService.new ResLoginAndCookie();
                 resLoginAndCookie = this.authService.refreshToken(refreshToken);
 
-                return ResponseEntity
-                                .ok()
+                return ResponseEntity.ok()
                                 .header(HttpHeaders.SET_COOKIE, resLoginAndCookie.getResCookie())
                                 .body(resLoginAndCookie.getResLoginDTO());
         }

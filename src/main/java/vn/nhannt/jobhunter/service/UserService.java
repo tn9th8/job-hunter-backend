@@ -153,6 +153,7 @@ public class UserService {
         resUser.setCreatedAt(dbUser.getCreatedAt());
         resUser.setCreatedBy(dbUser.getCreatedBy());
         // FK
+        // TO DO role
         if (dbUser.getCompany() != null) {
             final ResCreationUserDTO.FkCompany fkCompany = new ResCreationUserDTO.FkCompany(
                     dbUser.getCompany().getId(),
@@ -172,6 +173,7 @@ public class UserService {
         resUser.setUpdatedAt(dbUser.getUpdatedAt());
         resUser.setUpdatedBy(dbUser.getUpdatedBy());
         // FK
+        // TO TO role
         if (dbUser.getCompany() != null) {
             final ResUpdateUserDTO.FkCompany fkCompany = new ResUpdateUserDTO.FkCompany(
                     dbUser.getCompany().getId(),
