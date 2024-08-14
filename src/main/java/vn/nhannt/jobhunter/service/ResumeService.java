@@ -3,10 +3,16 @@ package vn.nhannt.jobhunter.service;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
+
+import com.turkraft.springfilter.converter.FilterSpecification;
+import com.turkraft.springfilter.converter.FilterSpecificationConverter;
+import com.turkraft.springfilter.parser.FilterParser;
+import com.turkraft.springfilter.parser.node.FilterNode;
 
 import vn.nhannt.jobhunter.domain.entity.Job;
 import vn.nhannt.jobhunter.domain.entity.Resume;
@@ -14,6 +20,7 @@ import vn.nhannt.jobhunter.domain.entity.User;
 import vn.nhannt.jobhunter.domain.response.ResPaginationDTO;
 import vn.nhannt.jobhunter.domain.response.ResResumeDTO;
 import vn.nhannt.jobhunter.repository.ResumeRepository;
+import vn.nhannt.jobhunter.util.SecurityUtil;
 
 @Service
 public class ResumeService {
@@ -21,6 +28,12 @@ public class ResumeService {
     private final ResumeRepository resumeRepository;
     private final UserService userService;
     private final JobService jobService;
+
+    @Autowired
+    private FilterParser filterParser;
+
+    @Autowired
+    private FilterSpecificationConverter filterSpecificationConverter;
 
     public ResumeService(
             ResumeRepository resumeRepository,
@@ -90,6 +103,18 @@ public class ResumeService {
         resPagination.setMeta(meta);
 
         return resPagination;
+    }
+
+    public ResPaginationDTO findResumesByUser(Pageable pageable) {
+        // get the login user
+        String email = SecurityUtil.getCurrentUserLogin().isPresent() == true
+                ? SecurityUtil.getCurrentUserLogin().get()
+                : "";
+        // build query string
+        FilterNode node = filterParser.parse("email='" + email + "'");
+        FilterSpecification<Resume> spec = filterSpecificationConverter.convert(node);
+        // fetch
+        return this.findResumes(spec, pageable);
     }
 
 }

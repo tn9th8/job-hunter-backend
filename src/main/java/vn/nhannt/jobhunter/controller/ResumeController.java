@@ -54,20 +54,27 @@ public class ResumeController {
         return ResponseEntity.noContent().build();
     }
 
-    @ApiMessage("find one resume")
+    @ApiMessage("fetch one resume")
     @GetMapping("/resumes/{id}")
     public ResponseEntity<ResResumeDTO> fetchOne(@PathVariable("id") Long id) {
         return ResponseEntity.ok(
                 ResResumeDTO.mapFrom(this.resumeService.findResume(id)));
     }
 
-    @ApiMessage("find all resume")
+    @ApiMessage("fetch all resumes")
     @GetMapping("/resumes")
     public ResponseEntity<ResPaginationDTO> fetchAll(
             @Filter Specification<Resume> spec,
             Pageable pageable) {
         return ResponseEntity.ok(
                 this.resumeService.findResumes(spec, pageable));
+    }
+
+    @ApiMessage("fetch resumes by user")
+    @GetMapping("/resumes/by-user")
+    public ResponseEntity<ResPaginationDTO> fetchAllByUser(@Filter Pageable pageable) {
+        return ResponseEntity.ok()
+                .body(this.resumeService.findResumesByUser(pageable));
     }
 
 }
