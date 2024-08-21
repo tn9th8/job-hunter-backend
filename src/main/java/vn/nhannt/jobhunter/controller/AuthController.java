@@ -18,12 +18,14 @@ import org.springframework.web.bind.annotation.RestController;
 import jakarta.validation.Valid;
 import vn.nhannt.jobhunter.domain.entity.User;
 import vn.nhannt.jobhunter.domain.request.ReqLoginDTO;
+import vn.nhannt.jobhunter.domain.response.ResCreationUserDTO;
 import vn.nhannt.jobhunter.domain.response.ResLoginDTO;
 import vn.nhannt.jobhunter.service.AuthService;
 import vn.nhannt.jobhunter.service.UserService;
 import vn.nhannt.jobhunter.util.SecurityUtil;
 import vn.nhannt.jobhunter.util.annotation.ApiMessage;
 import vn.nhannt.jobhunter.util.constant.Constants;
+import vn.nhannt.jobhunter.util.error.IdInvalidException;
 import vn.nhannt.jobhunter.util.error.UniqueException;
 
 @RestController
@@ -163,4 +165,13 @@ public class AuthController {
                                 .header(HttpHeaders.SET_COOKIE, deleteCookie.toString())
                                 .build();
         }
+
+        @PostMapping("/auth/register")
+        @ApiMessage("Register a new user")
+        public ResponseEntity<ResCreationUserDTO> register(@Valid @RequestBody User reqUser)
+                        throws IdInvalidException, UniqueException {
+                return ResponseEntity.ok()
+                                .body(this.userService.convertToResCreationUserDTO(this.userService.create(reqUser)));
+        }
+
 }

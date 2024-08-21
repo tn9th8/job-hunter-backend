@@ -59,6 +59,7 @@ public class UserService {
         if (userRepository.existsByEmail(user.getEmail())) {
             throw new UniqueException("Đã tồn tại User có Email " + user.getEmail());
         }
+
         // hash Password
         String hashPassword = passwordEncoder.encode(user.getPassword());
         user.setPassword(hashPassword);
