@@ -24,6 +24,7 @@ import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import vn.nhannt.jobhunter.util.SecurityUtil;
 import vn.nhannt.jobhunter.util.constant.ApiMethodEnum;
@@ -35,6 +36,7 @@ import vn.nhannt.jobhunter.util.constant.ModuleEnum;
 @SQLRestriction("deleted = false")
 @Getter
 @Setter
+@NoArgsConstructor
 public class Permission implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -72,6 +74,13 @@ public class Permission implements Serializable {
     private String updatedBy;
 
     private boolean deleted = Boolean.FALSE;
+
+    public Permission(String name, String apiPath, ApiMethodEnum method, ModuleEnum module) {
+        this.name = name;
+        this.apiPath = apiPath;
+        this.method = method;
+        this.module = module;
+    }
 
     @PrePersist
     private void setUserBeforeCreation() {

@@ -91,7 +91,7 @@ public class AuthService {
                 : "";
 
         // check email is null
-        if (email == null) {
+        if (email.equals("")) {
             throw new IllegalArgumentException("Principal trong Spring Security Context thì null");
         }
         // update the refresh token attribute

@@ -144,7 +144,9 @@ public class AuthController {
                                 .body(resLoginAndCookie.getResLoginDTO());
         }
 
-        @GetMapping("/auth/logout")
+        // TO DO FE
+        // @GetMapping("/auth/logout")
+        @PostMapping("/auth/logout")
         @ApiMessage("Log out")
         public ResponseEntity<Void> logout() {
                 // logic log out
