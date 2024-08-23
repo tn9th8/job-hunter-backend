@@ -52,12 +52,13 @@ public class User implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @NotBlank(message = "The name field is not blank")
     private String name;
 
-    @NotBlank(message = "The email field is not null")
+    @NotBlank(message = "The email field is not blank")
     private String email;
 
-    @NotBlank(message = "The password field is not null")
+    @NotBlank(message = "The password field is not blank")
     private String password;
 
     private int age;

@@ -23,7 +23,6 @@ import jakarta.persistence.OneToOne;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Table;
-import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;
 import lombok.Setter;
 import vn.nhannt.jobhunter.util.SecurityUtil;
@@ -38,12 +37,6 @@ public class Subscriber {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
-
-    @NotBlank(message = "email không được để trống")
-    private String email;
-
-    @NotBlank(message = "name không được để trống")
-    private String name;
 
     // FK
     @ManyToMany(fetch = FetchType.LAZY)
