@@ -64,6 +64,14 @@ public class Permission implements Serializable {
     @JsonIgnore
     private List<Role> roles;
 
+    // Constructor
+    public Permission(String name, String apiPath, ApiMethodEnum method, ModuleEnum module) {
+        this.name = name;
+        this.apiPath = apiPath;
+        this.method = method;
+        this.module = module;
+    }
+
     // log
     @CreationTimestamp
     private Instant createdAt;
@@ -74,13 +82,6 @@ public class Permission implements Serializable {
     private String updatedBy;
 
     private boolean deleted = Boolean.FALSE;
-
-    public Permission(String name, String apiPath, ApiMethodEnum method, ModuleEnum module) {
-        this.name = name;
-        this.apiPath = apiPath;
-        this.method = method;
-        this.module = module;
-    }
 
     @PrePersist
     private void setUserBeforeCreation() {
