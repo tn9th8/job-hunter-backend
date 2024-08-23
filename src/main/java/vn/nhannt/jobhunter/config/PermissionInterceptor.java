@@ -14,7 +14,7 @@ import vn.nhannt.jobhunter.domain.entity.Role;
 import vn.nhannt.jobhunter.domain.entity.User;
 import vn.nhannt.jobhunter.service.UserService;
 import vn.nhannt.jobhunter.util.SecurityUtil;
-import vn.nhannt.jobhunter.util.error.UniqueException;
+import vn.nhannt.jobhunter.util.error.PermissionException;
 
 public class PermissionInterceptor implements HandlerInterceptor {
     @Autowired
@@ -49,10 +49,10 @@ public class PermissionInterceptor implements HandlerInterceptor {
                                     && item.getMethod().equals(httpMethod));
 
                     if (isAllow == false) {
-                        throw new UniqueException("Bạn không có quyền truy cập endpoint này.");
+                        throw new PermissionException("Bạn không có quyền truy cập endpoint này.");
                     }
                 } else {
-                    throw new UniqueException("Bạn không có quyền truy cập endpoint này.");
+                    throw new PermissionException("Bạn không có quyền truy cập endpoint này.");
                 }
             }
         }
