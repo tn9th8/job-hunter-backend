@@ -31,6 +31,7 @@ dependencies {
 	runtimeOnly("com.mysql:mysql-connector-j") // j is  short-hand of java
 	testImplementation("org.springframework.boot:spring-boot-starter-test") // use it for writing test cases
 	testImplementation("org.springframework.security:spring-security-test")
+	
 }
 
 tasks.withType<Test> {
