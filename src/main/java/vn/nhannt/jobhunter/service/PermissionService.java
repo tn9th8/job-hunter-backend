@@ -49,7 +49,6 @@ public class PermissionService {
         currentPermission.getRoles().forEach(role -> {
             role.getPermissions().remove(currentPermission);
         });
-
         // delete permission
         this.permissionRepository.deleteById(id);
     }

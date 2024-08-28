@@ -14,6 +14,7 @@ import vn.nhannt.jobhunter.domain.entity.Role;
 import vn.nhannt.jobhunter.domain.entity.User;
 import vn.nhannt.jobhunter.service.UserService;
 import vn.nhannt.jobhunter.util.SecurityUtil;
+import vn.nhannt.jobhunter.util.constant.ApiMethodEnum;
 import vn.nhannt.jobhunter.util.error.PermissionException;
 
 public class PermissionInterceptor implements HandlerInterceptor {
@@ -27,12 +28,8 @@ public class PermissionInterceptor implements HandlerInterceptor {
             HttpServletResponse response, Object handler)
             throws Exception {
         String path = (String) request.getAttribute(HandlerMapping.BEST_MATCHING_PATTERN_ATTRIBUTE);
-        String requestURI = request.getRequestURI();
+        // String requestURI = request.getRequestURI();
         String httpMethod = request.getMethod();
-        System.out.println(">>> RUN preHandle");
-        System.out.println(">>> path= " + path);
-        System.out.println(">>> httpMethod= " + httpMethod);
-        System.out.println(">>> requestURI= " + requestURI);
 
         String email = SecurityUtil.getCurrentUserLogin().isPresent() == true
                 ? SecurityUtil.getCurrentUserLogin().get()
@@ -45,14 +42,17 @@ public class PermissionInterceptor implements HandlerInterceptor {
                 if (role != null) {
                     List<Permission> permissions = role.getPermissions();
                     boolean isAllow = permissions.stream()
-                            .anyMatch(item -> item.getApiPath().equals(path)
-                                    && item.getMethod().equals(httpMethod));
+                            .anyMatch(item -> {
+                                ApiMethodEnum method = ApiMethodEnum.valueOf(httpMethod);
+                                return item.getApiPath().equals(path) &&
+                                        item.getMethod().equals(method);
+                            });
 
                     if (isAllow == false) {
-                        throw new PermissionException("Bạn không có quyền truy cập endpoint này.");
+                        throw new PermissionException("Bạn không có quyền hạn truy cập endpoint này.");
                     }
                 } else {
-                    throw new PermissionException("Bạn không có quyền truy cập endpoint này.");
+                    throw new PermissionException("Bạn không có vai trò truy cập endpoint này.");
                 }
             }
         }

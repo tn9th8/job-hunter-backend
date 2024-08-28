@@ -3,6 +3,7 @@ package vn.nhannt.jobhunter.util.error;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
@@ -104,6 +105,18 @@ public class GlobalException {
         response.setMessage("Unique Exception");
         response.setStatus(HttpStatus.BAD_REQUEST.value());
         response.setError(ue.getMessage());
+
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+    }
+
+    @ExceptionHandler(value = { DuplicateKeyException.class })
+    public ResponseEntity<RestResponse<Object>> handleDuplicateKeyException(DuplicateKeyException e) {
+
+        RestResponse<Object> response = new RestResponse<>();
+
+        response.setMessage("Duplicate Key Exception");
+        response.setStatus(HttpStatus.BAD_REQUEST.value());
+        response.setError(e.getMessage());
 
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
     }

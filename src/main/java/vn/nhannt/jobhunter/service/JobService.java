@@ -99,16 +99,16 @@ public class JobService {
     }
 
     public ResPaginationDTO findJobs(Specification<Job> spec, Pageable pageable) {
-        final Page<Job> pageJob = this.jobRepository.findAll(spec, pageable);
+        final Page<Job> page = this.jobRepository.findAll(spec, pageable);
 
         final ResPaginationDTO resPagination = new ResPaginationDTO();
-        resPagination.setResult(pageJob.getContent());
+        resPagination.setResult(page.getContent());
 
         final ResPaginationDTO.Meta meta = new ResPaginationDTO.Meta();
-        meta.setPage(pageJob.getNumber() + 1);
-        meta.setPageSize(pageJob.getSize());
-        meta.setPages(pageJob.getTotalPages());
-        meta.setTotal(pageJob.getTotalElements());
+        meta.setPage(page.getNumber() + 1);
+        meta.setPageSize(page.getSize());
+        meta.setPages(page.getTotalPages());
+        meta.setTotal(page.getTotalElements());
         resPagination.setMeta(meta);
 
         return resPagination;
