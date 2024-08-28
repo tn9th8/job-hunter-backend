@@ -37,12 +37,12 @@ public class CompanyService {
     /**
      * update a existing company
      */
-    @SuppressWarnings("null")
+    // TO DO
     public Company update(Company company) throws UniqueException {
         Company existingCompany = this.findOne(company.getId());
 
         if (existingCompany == null) {
-            return null;
+            throw new UniqueException("Company is not found with id " + company.getId());
         }
 
         existingCompany.setDescription(company.getDescription());
