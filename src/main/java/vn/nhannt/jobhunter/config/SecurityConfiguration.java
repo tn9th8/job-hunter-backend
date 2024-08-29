@@ -46,7 +46,7 @@ public class SecurityConfiguration {
             CustomAuthenticationEntryPoint customAuthenticationEntryPoint) throws Exception {
 
         final String[] whiteArray = {
-                "/", "/storage/**", "/api/v1/mail/**",
+                "/", "/storage/**", "/api/v1/email",
                 "/api/v1/auth/login", "/api/v1/auth/refresh", "/api/v1/auth/register" };
 
         http
