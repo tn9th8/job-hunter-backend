@@ -1,6 +1,8 @@
 package vn.nhannt.jobhunter.service;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -12,6 +14,8 @@ import org.springframework.stereotype.Service;
 import vn.nhannt.jobhunter.domain.entity.Company;
 import vn.nhannt.jobhunter.domain.entity.Job;
 import vn.nhannt.jobhunter.domain.entity.Skill;
+import vn.nhannt.jobhunter.domain.entity.Subscriber;
+import vn.nhannt.jobhunter.domain.response.ResEmailJob;
 import vn.nhannt.jobhunter.domain.response.ResPaginationDTO;
 import vn.nhannt.jobhunter.repository.JobRepository;
 
@@ -21,14 +25,18 @@ public class JobService {
     private final JobRepository jobRepository;
     private final SkillService skillService;
     private final CompanyService companyService;
+    private final SubscriberService subscriberService;
+    private final MailService mailService;
 
     public JobService(
             JobRepository jobRepository,
             SkillService skillService,
-            CompanyService companyService) {
+            CompanyService companyService, SubscriberService subscriberService, MailService mailService) {
         this.jobRepository = jobRepository;
         this.skillService = skillService;
         this.companyService = companyService;
+        this.subscriberService = subscriberService;
+        this.mailService = mailService;
     }
 
     public Job createJob(Job reqJob) {
@@ -55,7 +63,7 @@ public class JobService {
         // vì check sẽ làm giảm hiệu năng
 
         // check id
-        final Job currentJob = this.findJobOrException(reqJob.getId());
+        final Job currentJob = this.findJobWithNotNull(reqJob.getId());
 
         // check skills
         if (reqJob.getSkills() != null) {
@@ -83,21 +91,27 @@ public class JobService {
         return this.jobRepository.save(currentJob);
     }
 
-    public Job findJobOrException(Long id) {
+    public void deleteJob(Long id) {
+        // check id
+        this.findJobWithNotNull(id);
+        // delete
+        this.jobRepository.deleteById(id);
+    }
+
+    public Job findJobWithNotNull(Long id) {
         final Optional<Job> optionalJob = this.jobRepository.findById(id); // check not null
-        if (!optionalJob.isPresent()) {
+        if (optionalJob.isEmpty()) {
             throw new IllegalArgumentException("Job is not found with " + id);
         }
         return optionalJob.get();
     }
 
-    public void deleteJob(Long id) {
-        // check id
-        this.findJobOrException(id);
-        // delete
-        this.jobRepository.deleteById(id);
-    }
-
+    /**
+     * find all Jobs with pagination
+     * @param spec
+     * @param pageable
+     * @return
+     */
     public ResPaginationDTO findJobs(Specification<Job> spec, Pageable pageable) {
         final Page<Job> page = this.jobRepository.findAll(spec, pageable);
 
@@ -114,4 +128,36 @@ public class JobService {
         return resPagination;
     }
 
+    public void mailJobsToSubscriber() {
+        // TO DO ko nên lấy tất mà phân trang dữ liệu
+        List<Subscriber> subscribers = this.subscriberService.findSubscribers();
+
+        if (!subscribers.isEmpty()) {
+            subscribers.stream()
+                    .filter(sub -> !sub.getSkills().isEmpty())
+                    .forEach(sub -> {
+                        List<Job> jobs = this.jobRepository.findBySkillsIn(sub.getSkills());
+
+                        if (!jobs.isEmpty()) {
+                            Map<String, Object> variables = new HashMap<>();
+
+                            // dto job in front
+                            // because not share data/session amount threads
+                            List<ResEmailJob> resEmailJobs = jobs.stream()
+                                            .map(job -> ResEmailJob.mapFrom(job))
+                                            .toList();
+
+                            variables.put("name", sub.getUser().getName());
+                            variables.put("jobs", resEmailJobs);
+
+                            this.mailService.sendEmailFromTemplateSync(
+                                    sub.getUser().getEmail(),
+                                    "Cơ hội công việc tốt đang chờ đón bạn, khám phá ngay !",
+                                    "job",
+                                    variables
+                            );
+                        }
+                    });
+        }
+    }
 }

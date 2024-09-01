@@ -55,7 +55,7 @@ public class SubscriberController {
     @GetMapping("/subscribers/{id}")
     public ResponseEntity<Subscriber> fetchOne(@PathVariable("id") Long id) {
         return ResponseEntity.ok()
-                .body(this.subscriberService.findSubscriberById(id));
+                .body(this.subscriberService.findSubscriber(id));
     }
 
     @ApiMessage("Fetch all subscribers")
@@ -71,7 +71,7 @@ public class SubscriberController {
     @GetMapping("/subscribers/by-user")
     public ResponseEntity<Subscriber> fetchOneByUser() {
         return ResponseEntity.ok()
-                .body(this.subscriberService.findSubscriberByUser());
+                .body(this.subscriberService.findSubscriber());
     }
 
 }

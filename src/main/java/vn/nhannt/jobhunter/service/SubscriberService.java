@@ -1,6 +1,8 @@
 package vn.nhannt.jobhunter.service;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -10,6 +12,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
+import vn.nhannt.jobhunter.domain.entity.Job;
+import vn.nhannt.jobhunter.domain.entity.Skill;
 import vn.nhannt.jobhunter.domain.entity.Subscriber;
 import vn.nhannt.jobhunter.domain.entity.User;
 import vn.nhannt.jobhunter.domain.response.ResPaginationDTO;
@@ -22,6 +26,7 @@ public class SubscriberService {
     private final SkillService skillService;
     private final UserService userService;
 
+
     public SubscriberService(
             SubscriberRepository subscriberRepository,
             SkillService skillService,
@@ -29,11 +34,12 @@ public class SubscriberService {
         this.subscriberRepository = subscriberRepository;
         this.skillService = skillService;
         this.userService = userService;
+
     }
 
     public Subscriber createSubscriber(Subscriber reqSub) {
         // check user
-        String email = SecurityUtil.getCurrentUserLogin().isPresent() == true
+        String email = SecurityUtil.getCurrentUserLogin().isPresent()
                 ? SecurityUtil.getCurrentUserLogin().get()
                 : "";
         final User currentUser = this.userService.findByUsername(email);
@@ -51,7 +57,7 @@ public class SubscriberService {
 
     public Subscriber updateSubscriber(Subscriber reqSub) {
         // check user
-        String email = SecurityUtil.getCurrentUserLogin().isPresent() == true
+        String email = SecurityUtil.getCurrentUserLogin().isPresent()
                 ? SecurityUtil.getCurrentUserLogin().get()
                 : "";
         final User currentUser = this.userService.findByUsername(email);
@@ -68,7 +74,7 @@ public class SubscriberService {
 
     public void deleteSubscriber() {
         // check user
-        String email = SecurityUtil.getCurrentUserLogin().isPresent() == true
+        String email = SecurityUtil.getCurrentUserLogin().isPresent()
                 ? SecurityUtil.getCurrentUserLogin().get()
                 : "";
 
@@ -80,7 +86,12 @@ public class SubscriberService {
         this.subscriberRepository.deleteById(currentUser.getId());
     }
 
-    public Subscriber findSubscriberById(Long id) {
+    /**
+     * find one Subscriber By ID
+     * @param id: Long
+     * @return Subscriber
+     */
+    public Subscriber findSubscriber(Long id) {
         final Optional<Subscriber> optSubscriber = this.subscriberRepository.findById(id);
 
         if (optSubscriber.isEmpty())
@@ -89,6 +100,29 @@ public class SubscriberService {
         return optSubscriber.get();
     }
 
+    /**
+     * find one Subscriber By User
+     * @return Subscriber
+     */
+    public Subscriber findSubscriber() {
+        // check user
+        String email = SecurityUtil.getCurrentUserLogin().isPresent()
+                ? SecurityUtil.getCurrentUserLogin().get()
+                : "";
+        final User currentUser = this.userService.findByUsername(email);
+
+        if (currentUser.getSubscriber() == null)
+            throw new IllegalArgumentException("Subscriber is not found with email " + email);
+
+        return currentUser.getSubscriber();
+    }
+
+    /**
+     * find all Subscribers with pagination
+     * @param spec: pecification<Subscriber>
+     * @param pageable: Pageable
+     * @return ResPaginationDTO
+     */
     public ResPaginationDTO findSubscribers(Specification<Subscriber> spec, Pageable pageable) {
         final Page<Subscriber> page = this.subscriberRepository.findAll(spec, pageable);
 
@@ -105,18 +139,8 @@ public class SubscriberService {
         return resPagination;
     }
 
-    // other
-    public Subscriber findSubscriberByUser() {
-        // check user
-        String email = SecurityUtil.getCurrentUserLogin().isPresent() == true
-                ? SecurityUtil.getCurrentUserLogin().get()
-                : "";
-        final User currentUser = this.userService.findByUsername(email);
-
-        if (currentUser.getSubscriber() == null)
-            throw new IllegalArgumentException("Subscriber is not found with email " + email);
-
-        return currentUser.getSubscriber();
+    public List<Subscriber> findSubscribers() {
+        return this.subscriberRepository.findAll();
     }
 
 }

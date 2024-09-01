@@ -55,7 +55,7 @@ public class ResumeService {
         }
         // check job
         if (reqResume.getJob().getId() != null) {
-            final Job fkJob = this.jobService.findJobOrException(
+            final Job fkJob = this.jobService.findJobWithNotNull(
                     reqResume.getJob().getId());
             reqResume.setJob(fkJob);
         } else {

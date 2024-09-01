@@ -74,7 +74,7 @@ public class JobController {
         return ResponseEntity
                 .ok()
                 .body(ResJobDTO.mappedBy(
-                        this.jobService.findJobOrException(id)));
+                        this.jobService.findJobWithNotNull(id)));
     }
 
 }
