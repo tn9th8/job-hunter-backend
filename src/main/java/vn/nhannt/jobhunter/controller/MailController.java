@@ -1,5 +1,8 @@
 package vn.nhannt.jobhunter.controller;
 
+import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -20,11 +23,21 @@ public class MailController {
         this.jobService = jobService;
     }
 
-    @ApiMessage("Send email")
+    /**
+     * Send email to subscribers about jobs matching skills of ones
+     * Schedule: every Saturday, 8pm
+     * Transactional
+     * - propagation: nhập vào session hiện có, nếu ko tự tạo session mới
+     * - readOnly: chỉ cho đọc DB, từ đó tối ưu DB
+     * - noRollbackFor: ko rollback với các lỗi thuộc lớp Exception
+     */
+    @ApiMessage("Send email to subscribers about jobs matching skills of ones")
     @GetMapping("/email")
-    public String sendEmail() {
+    @Scheduled(cron = "0 0 20 ? * SAT")
+    @Transactional(propagation= Propagation.REQUIRED, readOnly=true, noRollbackFor=Exception.class)
+    public void sendEmail() {
         this.jobService.mailJobsToSubscriber();
-        return "oke";
+        System.out.println(">>> CRON EMAIL");
     }
 
 }
