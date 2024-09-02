@@ -43,6 +43,7 @@ public class Subscriber {
     @OneToOne(fetch = FetchType.LAZY)
     @MapsId
     @JoinColumn(name = "user_id")
+    @JsonIgnoreProperties(value = { "password", "refreshToken", "company", "role" })
     private User user;
 
     @ManyToMany(fetch = FetchType.LAZY)

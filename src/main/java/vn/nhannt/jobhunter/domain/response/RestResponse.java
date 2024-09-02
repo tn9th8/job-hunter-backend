@@ -6,8 +6,8 @@ import lombok.Setter;
 @Getter
 @Setter
 public class RestResponse<T> {
-    private String message;
+    private Object message;
     private int status;
-    private Object error;
     private T data;
+    private String error;
 }

@@ -47,9 +47,9 @@ public class GlobalException {
 
         RestResponse<Object> response = new RestResponse<>();
 
-        response.setMessage("Bad Credentials Exception");
+        response.setError("Bad Credentials Exception");
         response.setStatus(HttpStatus.UNAUTHORIZED.value());
-        response.setError("Username hoặc Password không hợp lệ");
+        response.setMessage("Username hoặc Password không hợp lệ");
 
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
     }
@@ -78,9 +78,9 @@ public class GlobalException {
                 .collect(Collectors.toList());
 
         RestResponse<Object> response = new RestResponse<>();
-        response.setMessage("Method Argument Not Valid Exception");
+        response.setError("Method Argument Not Valid Exception");
         response.setStatus(HttpStatus.BAD_REQUEST.value());
-        response.setError(errors.size() > 1 ? errors : errors.get(0));
+        response.setMessage(errors.size() > 1 ? errors : errors.get(0));
 
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
     }
@@ -90,9 +90,9 @@ public class GlobalException {
 
         RestResponse<Object> response = new RestResponse<>();
 
-        response.setMessage("Number Format Exception");
+        response.setError("Number Format Exception");
         response.setStatus(HttpStatus.BAD_REQUEST.value());
-        response.setError(nfe.getMessage());
+        response.setMessage(nfe.getMessage());
 
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
     }
@@ -102,9 +102,9 @@ public class GlobalException {
 
         RestResponse<Object> response = new RestResponse<>();
 
-        response.setMessage("Unique Exception");
+        response.setError("Unique Exception");
         response.setStatus(HttpStatus.BAD_REQUEST.value());
-        response.setError(ue.getMessage());
+        response.setMessage(ue.getMessage());
 
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
     }
@@ -114,9 +114,9 @@ public class GlobalException {
 
         RestResponse<Object> response = new RestResponse<>();
 
-        response.setMessage("Duplicate Key Exception");
+        response.setError("Duplicate Key Exception");
         response.setStatus(HttpStatus.BAD_REQUEST.value());
-        response.setError(e.getMessage());
+        response.setMessage(e.getMessage());
 
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
     }
@@ -126,9 +126,9 @@ public class GlobalException {
 
         RestResponse<Object> response = new RestResponse<>();
 
-        response.setMessage("No Resource Found Exception");
+        response.setError("No Resource Found Exception");
         response.setStatus(HttpStatus.NOT_FOUND.value());
-        response.setError(nrfe.getMessage());
+        response.setMessage(nrfe.getMessage());
 
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
     }
@@ -138,9 +138,9 @@ public class GlobalException {
 
         RestResponse<Object> response = new RestResponse<>();
 
-        response.setMessage("Jwt Exception");
+        response.setError("Jwt Exception");
         response.setStatus(HttpStatus.UNAUTHORIZED.value());
-        response.setError(je.getMessage());
+        response.setMessage(je.getMessage());
 
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
     }
@@ -151,9 +151,9 @@ public class GlobalException {
 
         RestResponse<Object> response = new RestResponse<>();
 
-        response.setMessage("Missing Request Cookie Exception");
+        response.setError("Missing Request Cookie Exception");
         response.setStatus(HttpStatus.BAD_REQUEST.value());
-        response.setError(mrce.getMessage());
+        response.setMessage(mrce.getMessage());
 
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
     }
@@ -164,9 +164,9 @@ public class GlobalException {
 
         RestResponse<Object> response = new RestResponse<>();
 
-        response.setMessage("Illegal Argument Exception");
+        response.setError("Illegal Argument Exception");
         response.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
-        response.setError(iae.getMessage());
+        response.setMessage(iae.getMessage());
 
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
     }
@@ -177,9 +177,9 @@ public class GlobalException {
 
         RestResponse<Object> response = new RestResponse<>();
 
-        response.setMessage("Http Request Method NotSupported Exception");
+        response.setError("Http Request Method NotSupported Exception");
         response.setStatus(HttpStatus.METHOD_NOT_ALLOWED.value());
-        response.setError(hrmnse.getMessage());
+        response.setMessage(hrmnse.getMessage());
 
         return ResponseEntity.status(HttpStatus.METHOD_NOT_ALLOWED).body(response);
     }
@@ -190,9 +190,9 @@ public class GlobalException {
 
         RestResponse<Object> response = new RestResponse<>();
 
-        response.setMessage("Http Message Not Readable Exception");
+        response.setError("Http Message Not Readable Exception");
         response.setStatus(HttpStatus.BAD_REQUEST.value());
-        response.setError(hmnre.getMessage());
+        response.setMessage(hmnre.getMessage());
 
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
     }
@@ -203,9 +203,9 @@ public class GlobalException {
 
         RestResponse<Object> response = new RestResponse<>();
 
-        response.setMessage("Upload File Exception");
+        response.setError("Upload File Exception");
         response.setStatus(HttpStatus.BAD_REQUEST.value());
-        response.setError(ule.getMessage());
+        response.setMessage(ule.getMessage());
 
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
     }
@@ -216,9 +216,9 @@ public class GlobalException {
 
         RestResponse<Object> response = new RestResponse<>();
 
-        response.setMessage("Upload File Exception");
+        response.setError("Upload File Exception");
         response.setStatus(HttpStatus.BAD_REQUEST.value());
-        response.setError(musee.getMessage());
+        response.setMessage(musee.getMessage());
 
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
     }
@@ -229,9 +229,9 @@ public class GlobalException {
 
         RestResponse<Object> response = new RestResponse<>();
 
-        response.setMessage("Permission Exception");
+        response.setError("Permission Exception");
         response.setStatus(HttpStatus.FORBIDDEN.value());
-        response.setError(pe.getMessage());
+        response.setMessage(pe.getMessage());
 
         return ResponseEntity.status(HttpStatus.FORBIDDEN).body(response);
     }

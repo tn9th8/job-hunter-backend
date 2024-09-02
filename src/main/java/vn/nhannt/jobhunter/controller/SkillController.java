@@ -53,6 +53,13 @@ public class SkillController {
                 .body(this.skillService.updateSkill(reqSkill));
     }
 
+    @DeleteMapping("skills/{id}")
+    @ApiMessage("Delete a skill")
+    public ResponseEntity<Void> delele(@PathVariable("id") Long id) {
+        this.skillService.deleteSkill(id);
+        return ResponseEntity.noContent().build();
+    }
+
     @GetMapping("/skills")
     @ApiMessage("Fetch all skills")
     public ResponseEntity<ResPaginationDTO> fetchAll(
@@ -69,13 +76,6 @@ public class SkillController {
         return ResponseEntity
                 .ok()
                 .body(this.skillService.findOneSkill(id));
-    }
-
-    @DeleteMapping("skills/{id}")
-    @ApiMessage("Delete a skill")
-    public ResponseEntity<Void> delele(@PathVariable("id") Long id) {
-        this.skillService.deleteSkill(id);
-        return ResponseEntity.noContent().build();
     }
 
 }

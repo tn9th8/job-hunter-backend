@@ -54,9 +54,9 @@ public class SecurityConfiguration {
                 .cors(Customizer.withDefaults())
                 .authorizeHttpRequests(authz -> authz
                         .requestMatchers(whiteArray).permitAll()
-                        .requestMatchers(HttpMethod.GET, "/api/v1/companies").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/api/v1/jobs").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/api/v1/resumes").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/v1/companies/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/v1/jobs/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/v1/resumes/**").permitAll()
                         .anyRequest().authenticated())
                 // config jwt => client must send access token
                 .oauth2ResourceServer((oauth2) -> oauth2
