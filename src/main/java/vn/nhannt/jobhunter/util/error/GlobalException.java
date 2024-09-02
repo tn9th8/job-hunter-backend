@@ -30,6 +30,16 @@ import vn.nhannt.jobhunter.domain.response.RestResponse;
 @RestControllerAdvice
 public class GlobalException {
 
+    // handle all exception
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<RestResponse<Object>> handleAllException(Exception ex) {
+        RestResponse<Object> res = new RestResponse<Object>();
+        res.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
+        res.setMessage(ex.getMessage());
+        res.setError("Internal Server Error");
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(res);
+    }
+
     /**
      * Jwt configuration allows to handle exceptions at the filter chain
      *
