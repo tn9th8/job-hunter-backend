@@ -41,9 +41,12 @@ public class FormatRestResponse implements ResponseBodyAdvice<Object> {
         String message = apiMessage != null ? apiMessage.value() : "CALL API SUCCESS";
 
         // case: body is a string
-        if (body instanceof String) {
+        if (!MediaType.APPLICATION_JSON.equals(selectedContentType)) {
             return body;
         }
+//        if (body instanceof String) {
+//            return body;
+//        }
 
         // case: swagger
         String path = request.getURI().getPath();
